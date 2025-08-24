@@ -1,0 +1,9 @@
+# frontend
+/node_modules
+
+# log file
+*.log
+
+# others
+.DS_Store
+Thumbs.db
