@@ -1,0 +1,44 @@
+#topBox {
+    height: 80px;
+    width: 100%;
+    display: block;
+    background-color: #08e69c;
+    justify-content: center;
+    align-content: center;
+}
+#topBox h1{
+    display: flex;
+    font-weight: 1000;
+    font-size: 50px;
+    margin-left: 20px;
+    font-style: italic;
+}
+#userBox {
+    
+}
+
+#toolContainer{
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+}
+
+#toolContainer button{
+    color:red;
+    padding: 9px;
+    margin-bottom: 5vh;
+    border: 3px double #08e69c;
+    background-color: rgb(218, 250, 215);
+    width: 200px;
+    left: 50vw;
+}
+
+#toolContainer button:hover{
+    scale: 1.05;
+    background-color: rgb(226, 248, 224);
+}
+
+#toolContainer button:active {
+    scale: 0.95;
+    background-color: rgba(183, 209, 181, 0.87);
+}
