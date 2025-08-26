@@ -6,6 +6,8 @@ const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
 const DISBURSEMENT_API_ROUTE = 'http://localhost:3000/api/disbursement';
 
 const PAGE_CREATE_NEW_REQUEST = "createNewRequest";
+const PAGE_MY_PENDING_REQUEST = "myPendingRequest";
+const PAGE_MY_DEALING_REQUEST = "myDealingRequest";
 const PAGE_MY_REQUEST = "myRequest";
 
 function UserDashboard() {
@@ -144,7 +146,23 @@ function UserDashboard() {
             新增請款
           </button>
 
-          {/* My request */}
+          {/* My pending request */}
+          <button
+            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_PENDING_REQUEST ? "bg-gray-800" : ""}`}
+            onClick={() => setPage(PAGE_MY_PENDING_REQUEST)}
+          >
+            審核中款項
+          </button>
+
+          {/* My dealing request */}
+          <button
+            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_DEALING_REQUEST ? "bg-gray-800" : ""}`}
+            onClick={() => setPage(PAGE_MY_DEALING_REQUEST)}
+          >
+            處理中款項
+          </button>
+
+          {/* My request record */}
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_REQUEST ? "bg-gray-800" : ""}`}
             onClick={() => setPage(PAGE_MY_REQUEST)}
@@ -282,6 +300,200 @@ function UserDashboard() {
               </button>
             </form>
             {status && <p className="mt-4 text-sm">{status}</p>}
+          </div>
+          )}
+          </>
+        )}
+
+        {/* Page of my pending request */}
+        {page === PAGE_MY_PENDING_REQUEST && (
+          <>
+          {/* Tab button */}
+          <div className="flex border-b mb-6">
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === "reimbursement" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("reimbursement")}
+            >
+              審核中報帳款項
+            </button>
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === "budget" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("budget")}
+            >
+              審核中申請經費款項
+            </button>
+          </div>
+
+          {/* Tab of my pending reimbursement */}
+          {activeTab === "reimbursement" && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">審核中報帳款項</h1>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-200 text-left">
+                  <th className="p-3">品項</th>
+                  <th className="p-3">金額</th>
+                  <th className="p-3">狀態</th>
+                  <th className="p-3">申請時間</th>
+                  <th className="p-3">單據</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reimbursements.length > 0 ? (
+                  reimbursements.map((rec) => (
+                    <tr key={rec.id} className="border-b">
+                      <td className="p-3">{rec.title}</td>
+                      <td className="p-3">{rec.amount}</td>
+                      <td className="p-3">{rec.status}</td>
+                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                      <td className="p-3">
+                        <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
+                          查看
+                        </a>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="p-3" colSpan="5">尚無紀錄</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          )}
+
+          {/* Tab of my pending budget */}
+          {activeTab === "budget" && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">審核中申請經費款項</h1>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-200 text-left">
+                  <th className="p-3">品項</th>
+                  <th className="p-3">金額</th>
+                  <th className="p-3">狀態</th>
+                  <th className="p-3">申請時間</th>
+                </tr>
+              </thead>
+              <tbody>
+                {budgets.length > 0 ? (
+                  budgets.map((rec) => (
+                    <tr key={rec.id} className="border-b">
+                      <td className="p-3">{rec.title}</td>
+                      <td className="p-3">{rec.amount}</td>
+                      <td className="p-3">{rec.status}</td>
+                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="p-3" colSpan="5">尚無紀錄</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          )}
+          </>
+        )}
+
+        {/* Page of my dealing request */}
+        {page === PAGE_MY_DEALING_REQUEST && (
+          <>
+          {/* Tab button */}
+          <div className="flex border-b mb-6">
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === "reimbursement" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("reimbursement")}
+            >
+              處理中報帳款項
+            </button>
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === "budget" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("budget")}
+            >
+              處理中申請經費款項
+            </button>
+          </div>
+
+          {/* Tab of my dealing reimbursement */}
+          {activeTab === "reimbursement" && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">處理中報帳款項</h1>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-200 text-left">
+                  <th className="p-3">品項</th>
+                  <th className="p-3">金額</th>
+                  <th className="p-3">狀態</th>
+                  <th className="p-3">申請時間</th>
+                  <th className="p-3">單據</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reimbursements.length > 0 ? (
+                  reimbursements.map((rec) => (
+                    <tr key={rec.id} className="border-b">
+                      <td className="p-3">{rec.title}</td>
+                      <td className="p-3">{rec.amount}</td>
+                      <td className="p-3">{rec.status}</td>
+                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                      <td className="p-3">
+                        <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
+                          查看
+                        </a>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="p-3" colSpan="5">尚無紀錄</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          )}
+
+          {/* Tab of my dealing budget */}
+          {activeTab === "budget" && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">處理中申請經費款項</h1>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-200 text-left">
+                  <th className="p-3">品項</th>
+                  <th className="p-3">金額</th>
+                  <th className="p-3">狀態</th>
+                  <th className="p-3">申請時間</th>
+                </tr>
+              </thead>
+              <tbody>
+                {budgets.length > 0 ? (
+                  budgets.map((rec) => (
+                    <tr key={rec.id} className="border-b">
+                      <td className="p-3">{rec.title}</td>
+                      <td className="p-3">{rec.amount}</td>
+                      <td className="p-3">{rec.status}</td>
+                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="p-3" colSpan="5">尚無紀錄</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
           )}
           </>
