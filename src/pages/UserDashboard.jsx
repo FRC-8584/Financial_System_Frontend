@@ -6,6 +6,7 @@ const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
 const DISBURSEMENT_API_ROUTE = 'http://localhost:3000/api/disbursement';
 
 const PAGE_CREATE_NEW_REQUEST = "createNewRequest";
+const PAGE_MY_REQUEST = "myRequest";
 
 function UserDashboard() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function UserDashboard() {
 
   const [page, setPage] = useState(PAGE_CREATE_NEW_REQUEST); // apply / records / budgets
   const [activeTab, setActiveTab] = useState("reimbursement");
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const [reimbursementTitle, setReimbursementTitle] = useState("");
   const [reimbursementAmount, setReimbursementAmount] = useState("");
@@ -23,7 +25,7 @@ function UserDashboard() {
   const [budgetAmount, setBudgetAmount] = useState("");
   const [budgetDescription, setBudgetDescription] = useState("");
   
-  const [records, setRecords] = useState([]);
+  const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
   
   const [status, setStatus] = useState("");
@@ -46,7 +48,7 @@ function UserDashboard() {
       });
       if (!res.ok) throw new Error("載入紀錄失敗");
       const data = await res.json();
-      setRecords(data);
+      setReimbursements(data);
     } catch (err) {
       console.error(err);
       setStatus("載入紀錄錯誤：" + err.message);
@@ -134,30 +136,26 @@ function UserDashboard() {
       <aside className="w-64 bg-black text-white p-6 flex flex-col space-y-4">
         <h2 className="text-2xl font-bold mb-6">FRC8584 財務系統</h2>
         <nav className="flex flex-col space-y-2">
+          {/* Create new request */}
           <button
-            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === "apply" ? "bg-gray-800" : ""}`}
+            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_CREATE_NEW_REQUEST ? "bg-gray-800" : ""}`}
             onClick={() => setPage(PAGE_CREATE_NEW_REQUEST)}
           >
             新增請款
           </button>
+
+          {/* My request */}
           <button
-            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === "records" ? "bg-gray-800" : ""}`}
-            onClick={() => setPage("records")}
+            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_REQUEST ? "bg-gray-800" : ""}`}
+            onClick={() => setPage(PAGE_MY_REQUEST)}
           >
-            我的紀錄
+            我的請款紀錄
           </button>
-          <button
-            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === "budgets" ? "bg-gray-800" : ""}`}
-            onClick={() => setPage("budgets")}
-          >
-            我的預算
-          </button>
+
+          {/* Logout */}
           <button
             className="text-left hover:bg-gray-800 px-3 py-2 rounded"
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/");
-            }}
+            onClick={() => setShowLogoutConfirm(true)}
           >
             登出
           </button>
@@ -188,6 +186,7 @@ function UserDashboard() {
               新增申請經費
             </button>
           </div>
+
           {/* Tab of creating new reimbursement */}
           {activeTab === "reimbursement" && (
           <div id="createReimbursement" class="tab-content active">
@@ -241,6 +240,7 @@ function UserDashboard() {
             {status && <p className="mt-4 text-sm">{status}</p>}
           </div>
           )}
+
           {/* Tab of creating new budget */}
           {activeTab === "budget" && (
           <div id="createBudget" class="tab-content">
@@ -288,9 +288,32 @@ function UserDashboard() {
         )}
 
         {/* Page of my request */}
-        {page === "records" && (
+        {page === PAGE_MY_REQUEST && (
           <>
-            <h1 className="text-3xl font-bold mb-6">我的請款紀錄</h1>
+          {/* Tab button */}
+          <div className="flex border-b mb-6">
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === "reimbursement" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("reimbursement")}
+            >
+              報帳紀錄
+            </button>
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === "budget" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("budget")}
+            >
+              申請經費紀錄
+            </button>
+          </div>
+
+          {/* Tab of my reimbursement */}
+          {activeTab === "reimbursement" && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">我的報帳紀錄</h1>
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-200 text-left">
@@ -302,13 +325,13 @@ function UserDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {records.length > 0 ? (
-                  records.map((rec) => (
+                {reimbursements.length > 0 ? (
+                  reimbursements.map((rec) => (
                     <tr key={rec.id} className="border-b">
                       <td className="p-3">{rec.title}</td>
                       <td className="p-3">{rec.amount}</td>
                       <td className="p-3">{rec.status}</td>
-                      <td className="p-3">{new Date(rec.created_at).toLocaleString()}</td>
+                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
                       <td className="p-3">
                         <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
                           查看
@@ -323,17 +346,17 @@ function UserDashboard() {
                 )}
               </tbody>
             </table>
-          </>
-        )}
+          </div>
+          )}
 
-        {/* 查看預算頁（不可編輯） */}
-        {page === "budgets" && (
-          <>
-            <h1 className="text-3xl font-bold mb-6">我的預算</h1>
+          {/* Tab of my budget */}
+          {activeTab === "budget" && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">我的申請經費紀錄</h1>
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-200 text-left">
-                  <th className="p-3">項目</th>
+                  <th className="p-3">品項</th>
                   <th className="p-3">金額</th>
                   <th className="p-3">狀態</th>
                   <th className="p-3">申請時間</th>
@@ -341,22 +364,50 @@ function UserDashboard() {
               </thead>
               <tbody>
                 {budgets.length > 0 ? (
-                  budgets.map((b) => (
-                    <tr key={b.id} className="border-b">
-                      <td className="p-3">{b.title}</td>
-                      <td className="p-3">{b.amount}</td>
-                      <td className="p-3">{b.status}</td>
-                      <td className="p-3">{new Date(b.createdAt).toLocaleString()}</td>
+                  budgets.map((rec) => (
+                    <tr key={rec.id} className="border-b">
+                      <td className="p-3">{rec.title}</td>
+                      <td className="p-3">{rec.amount}</td>
+                      <td className="p-3">{rec.status}</td>
+                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td className="p-3" colSpan="4">尚無預算紀錄</td>
+                    <td className="p-3" colSpan="5">尚無紀錄</td>
                   </tr>
                 )}
               </tbody>
             </table>
+          </div>
+          )}
           </>
+        )}
+
+        {/* Logout confirm */}
+        {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg">
+            <p className="mb-4 text-lg">確定要登出嗎？</p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                取消
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  navigate("/");
+                }}
+              >
+                確定
+              </button>
+            </div>
+          </div>
+        </div>
         )}
       </main>
     </div>
