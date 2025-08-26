@@ -1,35 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Server API routes
 const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
 const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
 const DISBURSEMENT_API_ROUTE = 'http://localhost:3000/api/disbursement';
 
+// Pages
 const PAGE_CREATE_NEW_REQUEST = "createNewRequest";
 const PAGE_MY_PENDING_REQUEST = "myPendingRequest";
 const PAGE_MY_DEALING_REQUEST = "myDealingRequest";
 const PAGE_MY_REQUEST = "myRequest";
 
+// Tabs
+const TAB_REIMBURSEMENT = "reimbursement";
+const TAB_BUDGET = "budget";
+
 function UserDashboard() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");// JWT token
 
-  const [page, setPage] = useState(PAGE_CREATE_NEW_REQUEST); // apply / records / budgets
-  const [activeTab, setActiveTab] = useState("reimbursement");
+  // Webside view configration
+  const [page, setPage] = useState(PAGE_CREATE_NEW_REQUEST);
+  const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
+  // Reimbursement request form
   const [reimbursementTitle, setReimbursementTitle] = useState("");
   const [reimbursementAmount, setReimbursementAmount] = useState("");
   const [reimbursementDescription, setReimbursementDescription] = useState("");
   const [reimbursementReceipt, setReimbursementReceipt] = useState(null);
 
+  // Budget request form
   const [budgetTitle, setBudgetTitle] = useState("");
   const [budgetAmount, setBudgetAmount] = useState("");
   const [budgetDescription, setBudgetDescription] = useState("");
-  
+
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
-  
+
   const [status, setStatus] = useState("");
 
   // Initialize
@@ -189,24 +198,24 @@ function UserDashboard() {
           <div className="flex border-b mb-6">
             <button
               className={`px-4 py-2 font-bold ${
-                activeTab === "reimbursement" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+                activeTab === TAB_REIMBURSEMENT ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
               }`}
-              onClick={() => setActiveTab("reimbursement")}
+              onClick={() => setActiveTab(TAB_REIMBURSEMENT)}
             >
               新增報帳
             </button>
             <button
               className={`px-4 py-2 font-bold ${
-                activeTab === "budget" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+                activeTab === TAB_BUDGET ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
               }`}
-              onClick={() => setActiveTab("budget")}
+              onClick={() => setActiveTab(TAB_BUDGET)}
             >
               新增申請經費
             </button>
           </div>
 
           {/* Tab of creating new reimbursement */}
-          {activeTab === "reimbursement" && (
+          {activeTab === TAB_REIMBURSEMENT && (
           <div id="createReimbursement" class="tab-content active">
             <h1 className="text-3xl font-bold mb-6">新增報帳</h1>
             <form onSubmit={handleReimbursementSubmit} className="space-y-4" encType="multipart/form-data">
@@ -260,7 +269,7 @@ function UserDashboard() {
           )}
 
           {/* Tab of creating new budget */}
-          {activeTab === "budget" && (
+          {activeTab === TAB_BUDGET && (
           <div id="createBudget" class="tab-content">
             <h1 className="text-3xl font-bold mb-6">新增申請經費</h1>
             <form onSubmit={handleBudgetSubmit} className="space-y-4" encType="multipart/form-data">
@@ -312,24 +321,24 @@ function UserDashboard() {
           <div className="flex border-b mb-6">
             <button
               className={`px-4 py-2 font-bold ${
-                activeTab === "reimbursement" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+                activeTab === TAB_REIMBURSEMENT ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
               }`}
-              onClick={() => setActiveTab("reimbursement")}
+              onClick={() => setActiveTab(TAB_REIMBURSEMENT)}
             >
               審核中報帳款項
             </button>
             <button
               className={`px-4 py-2 font-bold ${
-                activeTab === "budget" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+                activeTab === TAB_BUDGET ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
               }`}
-              onClick={() => setActiveTab("budget")}
+              onClick={() => setActiveTab(TAB_BUDGET)}
             >
               審核中申請經費款項
             </button>
           </div>
 
           {/* Tab of my pending reimbursement */}
-          {activeTab === "reimbursement" && (
+          {activeTab === TAB_REIMBURSEMENT && (
           <div>
             <h1 className="text-3xl font-bold mb-6">審核中報帳款項</h1>
             <table className="w-full border-collapse">
@@ -368,7 +377,7 @@ function UserDashboard() {
           )}
 
           {/* Tab of my pending budget */}
-          {activeTab === "budget" && (
+          {activeTab === TAB_BUDGET && (
           <div>
             <h1 className="text-3xl font-bold mb-6">審核中申請經費款項</h1>
             <table className="w-full border-collapse">
@@ -409,24 +418,24 @@ function UserDashboard() {
           <div className="flex border-b mb-6">
             <button
               className={`px-4 py-2 font-bold ${
-                activeTab === "reimbursement" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+                activeTab === TAB_REIMBURSEMENT ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
               }`}
-              onClick={() => setActiveTab("reimbursement")}
+              onClick={() => setActiveTab(TAB_REIMBURSEMENT)}
             >
               處理中報帳款項
             </button>
             <button
               className={`px-4 py-2 font-bold ${
-                activeTab === "budget" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+                activeTab === TAB_BUDGET ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
               }`}
-              onClick={() => setActiveTab("budget")}
+              onClick={() => setActiveTab(TAB_BUDGET)}
             >
               處理中申請經費款項
             </button>
           </div>
 
           {/* Tab of my dealing reimbursement */}
-          {activeTab === "reimbursement" && (
+          {activeTab === TAB_REIMBURSEMENT && (
           <div>
             <h1 className="text-3xl font-bold mb-6">處理中報帳款項</h1>
             <table className="w-full border-collapse">
@@ -465,7 +474,7 @@ function UserDashboard() {
           )}
 
           {/* Tab of my dealing budget */}
-          {activeTab === "budget" && (
+          {activeTab === TAB_BUDGET && (
           <div>
             <h1 className="text-3xl font-bold mb-6">處理中申請經費款項</h1>
             <table className="w-full border-collapse">
@@ -506,24 +515,24 @@ function UserDashboard() {
           <div className="flex border-b mb-6">
             <button
               className={`px-4 py-2 font-bold ${
-                activeTab === "reimbursement" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+                activeTab === TAB_REIMBURSEMENT ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
               }`}
-              onClick={() => setActiveTab("reimbursement")}
+              onClick={() => setActiveTab(TAB_REIMBURSEMENT)}
             >
               報帳紀錄
             </button>
             <button
               className={`px-4 py-2 font-bold ${
-                activeTab === "budget" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+                activeTab === TAB_BUDGET ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
               }`}
-              onClick={() => setActiveTab("budget")}
+              onClick={() => setActiveTab(TAB_BUDGET)}
             >
               申請經費紀錄
             </button>
           </div>
 
           {/* Tab of my reimbursement */}
-          {activeTab === "reimbursement" && (
+          {activeTab === TAB_REIMBURSEMENT && (
           <div>
             <h1 className="text-3xl font-bold mb-6">我的報帳紀錄</h1>
             <table className="w-full border-collapse">
@@ -562,7 +571,7 @@ function UserDashboard() {
           )}
 
           {/* Tab of my budget */}
-          {activeTab === "budget" && (
+          {activeTab === TAB_BUDGET && (
           <div>
             <h1 className="text-3xl font-bold mb-6">我的申請經費紀錄</h1>
             <table className="w-full border-collapse">
