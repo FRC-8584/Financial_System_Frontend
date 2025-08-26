@@ -1,34 +1,47 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
+const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
+const DISBURSEMENT_API_ROUTE = 'http://localhost:3000/api/disbursement';
+
+const PAGE_CREATE_NEW_REQUEST = "createNewRequest";
+
 function UserDashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  const [page, setPage] = useState("apply"); // apply / records / budgets
-  const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
-  const [receipt, setReceipt] = useState(null);
-  const [status, setStatus] = useState("");
+  const [page, setPage] = useState(PAGE_CREATE_NEW_REQUEST); // apply / records / budgets
+  const [activeTab, setActiveTab] = useState("reimbursement");
 
+  const [reimbursementTitle, setReimbursementTitle] = useState("");
+  const [reimbursementAmount, setReimbursementAmount] = useState("");
+  const [reimbursementDescription, setReimbursementDescription] = useState("");
+  const [reimbursementReceipt, setReimbursementReceipt] = useState(null);
+
+  const [budgetTitle, setBudgetTitle] = useState("");
+  const [budgetAmount, setBudgetAmount] = useState("");
+  const [budgetDescription, setBudgetDescription] = useState("");
+  
   const [records, setRecords] = useState([]);
   const [budgets, setBudgets] = useState([]);
+  
+  const [status, setStatus] = useState("");
 
-  // 初始化載入
+  // Initialize
   useEffect(() => {
     if (!token) {
       navigate("/");
     } else {
-      fetchRecords();
+      fetchReimbursements();
       fetchBudgets();
     }
   }, [token, navigate]);
 
-  // 取得報帳紀錄
-  const fetchRecords = async () => {
+  // Get reimbursement records
+  const fetchReimbursements = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/my-records", {
+      const res = await fetch(REIMBURSEMENT_API_ROUTE + '/me', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("載入紀錄失敗");
@@ -40,10 +53,10 @@ function UserDashboard() {
     }
   };
 
-  // 取得預算紀錄
+  // Get budget records
   const fetchBudgets = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/budget/me", {
+      const res = await fetch(BUDGET_API_ROUTE + '/me', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("載入預算失敗");
@@ -55,33 +68,61 @@ function UserDashboard() {
     }
   };
 
-  // 送出報帳申請
-  const handleSubmit = async (e) => {
+  // Send reimbursement request
+  const handleReimbursementSubmit = async (e) => {
     e.preventDefault();
-    if (!receipt) {
+    if (!reimbursementReceipt) {
       setStatus("請上傳單據圖片");
       return;
     }
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("amount", amount);
-    formData.append("description", description);
-    formData.append("receipt", receipt);
+    formData.append("title", reimbursementTitle);
+    formData.append("amount", reimbursementAmount);
+    formData.append("description", reimbursementDescription);
+    formData.append("receipt", reimbursementReceipt);
 
     try {
-      const res = await fetch("http://localhost:3000/api/request", {
+      const res = await fetch(REIMBURSEMENT_API_ROUTE + '/', {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
       if (!res.ok) throw new Error("請款送出失敗");
 
-      setStatus("報帳申請已送出！");
-      setTitle("");
-      setAmount("");
-      setDescription("");
-      setReceipt(null);
-      await fetchRecords();
+      setStatus("款項已送出！");
+      setReimbursementTitle("");
+      setReimbursementAmount("");
+      setReimbursementDescription("");
+      setReimbursementReceipt(null);
+      await fetchReimbursements();
+    } catch (err) {
+      setStatus("錯誤：" + err.message);
+    }
+  };
+
+  // Send budget request
+  const handleBudgetSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(BUDGET_API_ROUTE + '/', {
+        method: "POST",
+        headers: { 
+          Authorization: `Bearer ${token}` ,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: budgetTitle,
+          amount: budgetAmount,
+          description: budgetDescription,
+        }),
+      });
+      if (!res.ok) throw new Error("請款送出失敗");
+
+      setStatus("款項已送出！");
+      setBudgetTitle("");
+      setBudgetAmount("");
+      setBudgetDescription("");
+      await fetchBudgets();
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -89,15 +130,15 @@ function UserDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* 側邊欄 */}
+      {/* Side Bar */}
       <aside className="w-64 bg-black text-white p-6 flex flex-col space-y-4">
         <h2 className="text-2xl font-bold mb-6">FRC8584 財務系統</h2>
         <nav className="flex flex-col space-y-2">
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === "apply" ? "bg-gray-800" : ""}`}
-            onClick={() => setPage("apply")}
+            onClick={() => setPage(PAGE_CREATE_NEW_REQUEST)}
           >
-            報帳申請
+            新增請款
           </button>
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === "records" ? "bg-gray-800" : ""}`}
@@ -123,66 +164,133 @@ function UserDashboard() {
         </nav>
       </aside>
 
-      {/* 主內容 */}
+      {/* Main */}
       <main className="flex-1 p-8 overflow-y-auto">
-        {/* 報帳申請頁 */}
-        {page === "apply" && (
+        {/* Page of creating new request */}
+        {page === PAGE_CREATE_NEW_REQUEST && (
           <>
-            <h1 className="text-3xl font-bold mb-6">報帳申請</h1>
-            <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
+          {/* Tab button */}
+          <div className="flex border-b mb-6">
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === "reimbursement" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("reimbursement")}
+            >
+              新增報帳
+            </button>
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === "budget" ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("budget")}
+            >
+              新增申請經費
+            </button>
+          </div>
+          {/* Tab of creating new reimbursement */}
+          {activeTab === "reimbursement" && (
+          <div id="createReimbursement" class="tab-content active">
+            <h1 className="text-3xl font-bold mb-6">新增報帳</h1>
+            <form onSubmit={handleReimbursementSubmit} className="space-y-4" encType="multipart/form-data">
               <div>
                 <label className="block mb-1 font-semibold">品項：</label>
                 <input
                   type="text"
                   className="w-full border px-3 py-2 rounded"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={reimbursementTitle}
+                  onChange={(e) => setReimbursementTitle(e.target.value)}
                   required
-                />
+                  />
               </div>
               <div>
                 <label className="block mb-1 font-semibold">報帳金額：</label>
                 <input
                   type="number"
                   className="w-full border px-3 py-2 rounded"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  value={reimbursementAmount}
+                  onChange={(e) => setReimbursementAmount(e.target.value)}
                   required
-                />
+                  />
               </div>
               <div>
                 <label className="block mb-1 font-semibold">備註：</label>
                 <textarea
                   className="w-full border px-3 py-2 rounded"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
+                  value={reimbursementDescription}
+                  onChange={(e) => setReimbursementDescription(e.target.value)}
+                  />
               </div>
               <div>
-                <label className="block mb-1 font-semibold">單據上傳：</label>
+                <label className="block mb-1 font-semibold">發票或證明上傳：</label>
                 <input
                   type="file"
                   accept="image/*"
                   className="w-full"
-                  onChange={(e) => setReceipt(e.target.files[0])}
+                  onChange={(e) => setReimbursementReceipt(e.target.files[0])}
                   required
-                />
+                  />
               </div>
               <button
                 type="submit"
                 className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
-              >
-                送出報帳
+                >
+                送出款項
               </button>
             </form>
             {status && <p className="mt-4 text-sm">{status}</p>}
+          </div>
+          )}
+          {/* Tab of creating new budget */}
+          {activeTab === "budget" && (
+          <div id="createBudget" class="tab-content">
+            <h1 className="text-3xl font-bold mb-6">新增申請經費</h1>
+            <form onSubmit={handleBudgetSubmit} className="space-y-4" encType="multipart/form-data">
+              <div>
+                <label className="block mb-1 font-semibold">品項：</label>
+                <input
+                  type="text"
+                  className="w-full border px-3 py-2 rounded"
+                  value={budgetTitle}
+                  onChange={(e) => setBudgetTitle(e.target.value)}
+                  required
+                  />
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold">申請金額：</label>
+                <input
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                  value={budgetAmount}
+                  onChange={(e) => setBudgetAmount(e.target.value)}
+                  required
+                  />
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold">備註：</label>
+                <textarea
+                  className="w-full border px-3 py-2 rounded"
+                  value={budgetDescription}
+                  onChange={(e) => setBudgetDescription(e.target.value)}
+                  />
+              </div>
+              <button
+                type="submit"
+                className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
+                >
+                送出款項
+              </button>
+            </form>
+            {status && <p className="mt-4 text-sm">{status}</p>}
+          </div>
+          )}
           </>
         )}
 
-        {/* 我的紀錄頁 */}
+        {/* Page of my request */}
         {page === "records" && (
           <>
-            <h1 className="text-3xl font-bold mb-6">我的紀錄</h1>
+            <h1 className="text-3xl font-bold mb-6">我的請款紀錄</h1>
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-200 text-left">
