@@ -67,7 +67,7 @@ function ManagerDashboard() {
       await fetchBudgets("?status=approved");
     }
     else if (page === PAGE_REQUEST_RECORD) {
-      await fetchDisbursements();
+      await fetchDisbursements("");
     }
   };
 
@@ -114,9 +114,9 @@ function ManagerDashboard() {
   };
 
   // Mark request payment as approved or rejected
-  const handleVerify = async (id, status) => {
+  const handleVerify = async (route, id, status) => {
     try {
-      const res = await fetch(REIMBURSEMENT_API_ROUTE + `/${id}/status`, {
+      const res = await fetch(route + `/${id}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -132,9 +132,9 @@ function ManagerDashboard() {
   };
 
   // Mark request payment as settled
-  const handleSettle = async (id) => {
+  const handleSettle = async (route, id) => {
     try {
-      const res = await fetch(REIMBURSEMENT_API_ROUTE + `/${id}/settle`, {
+      const res = await fetch(route + `/${id}/settle`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -239,8 +239,7 @@ function ManagerDashboard() {
                       <th className="p-3">金額</th>
                       <th className="p-3">申請時間</th>
                       <th className="p-3">單據</th>
-                      <th className="p-2"></th>
-                      <th className="p-2"></th>
+                      <th className="p-3"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -259,19 +258,19 @@ function ManagerDashboard() {
                             查看
                           </a>
                         </td>
-                        <td className="p-2">
-                          <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                        <td className="p-3">
+                          <button className="px-4 py-2 mx-3 bg-green-500 text-white rounded hover:bg-green-600"
                             onClick={() => {
-                              handleVerify(rec.id, 'approved');
+                              handleVerify(REIMBURSEMENT_API_ROUTE, rec.id, 'approved');
+                              loadPageData(PAGE_PENDING_REQUEST);
                             }}
                           >
                             審核通過
                           </button>
-                        </td>
-                        <td className="p-2">
-                          <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                          <button className="px-4 py-2 mx-3 bg-red-500 text-white rounded hover:bg-red-600"
                             onClick={() => {
-                              handleVerify(rec.id, 'rejected');
+                              handleVerify(REIMBURSEMENT_API_ROUTE, rec.id, 'rejected');
+                              loadPageData(PAGE_PENDING_REQUEST);
                             }}
                           >
                             審核不通過
@@ -306,6 +305,7 @@ function ManagerDashboard() {
                     <th className="p-3">品項</th>
                     <th className="p-3">金額</th>
                     <th className="p-3">申請時間</th>
+                    <th className="p-3"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -314,6 +314,24 @@ function ManagerDashboard() {
                         <td className="p-3">{rec.title}</td>
                         <td className="p-3">{rec.amount}</td>
                         <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                        <td className="p-3">
+                          <button className="px-4 py-2 mx-3 bg-green-500 text-white rounded hover:bg-green-600"
+                            onClick={() => {
+                              handleVerify(BUDGET_API_ROUTE, rec.id, 'approved');
+                              loadPageData(PAGE_PENDING_REQUEST);
+                            }}
+                          >
+                            審核通過
+                          </button>
+                          <button className="px-4 py-2 mx-3 bg-red-500 text-white rounded hover:bg-red-600"
+                            onClick={() => {
+                              handleVerify(BUDGET_API_ROUTE, rec.id, 'rejected');
+                              loadPageData(PAGE_PENDING_REQUEST);
+                            }}
+                          >
+                            審核不通過
+                          </button>
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -391,7 +409,8 @@ function ManagerDashboard() {
                         <td className="p-3">
                           <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                             onClick={() => {
-                              handleVerify(rec.id);
+                              handleSettle(REIMBURSEMENT_API_ROUTE, rec.id);
+                              loadPageData(PAGE_DEALING_REQUEST);
                             }}
                           >
                             標記結清
@@ -437,7 +456,8 @@ function ManagerDashboard() {
                         <td className="p-3">
                           <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                             onClick={() => {
-                              handleVerify(rec.id);
+                              handleSettle(BUDGET_API_ROUTE, rec.id);
+                              loadPageData(PAGE_DEALING_REQUEST);
                             }}
                           >
                             標記結清
