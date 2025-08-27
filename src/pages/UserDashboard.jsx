@@ -10,7 +10,7 @@ const DISBURSEMENT_API_ROUTE = 'http://localhost:3000/api/disbursement';
 const PAGE_CREATE_NEW_REQUEST = "createNewRequest";
 const PAGE_MY_PENDING_REQUEST = "myPendingRequest";
 const PAGE_MY_DEALING_REQUEST = "myDealingRequest";
-const PAGE_MY_REQUEST = "myRequest";
+const PAGE_MY_REQUEST_RECORD = "myRequestRecord";
 
 // Tabs
 const TAB_REIMBURSEMENT = "reimbursement";
@@ -21,7 +21,7 @@ function UserDashboard() {
   const token = localStorage.getItem("token");// JWT token
 
   // Webside view configration
-  const [page, setPage] = useState(PAGE_CREATE_NEW_REQUEST);
+  const [activePage, setActivePage] = useState(PAGE_CREATE_NEW_REQUEST);
   const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -61,33 +61,29 @@ function UserDashboard() {
 
   // Get reimbursement records
   const fetchReimbursements = async () => {
-    console.log(selectRequirements);
     try {
       const res = await fetch(REIMBURSEMENT_API_ROUTE + '/me' + selectRequirements.trim(), {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("載入紀錄失敗");
-      const data = await res.json();
-      setReimbursements(data);
+      if (!res.ok) throw new Error("載入報帳款項失敗");
+      setReimbursements(await res.json());
     } catch (err) {
       console.error(err);
-      setStatus("載入紀錄錯誤：" + err.message);
+      setStatus("載入報帳款項錯誤：" + err.message);
     }
   };
 
   // Get budget records
   const fetchBudgets = async () => {
-    console.log(selectRequirements);
     try {
       const res = await fetch(BUDGET_API_ROUTE + '/me' + selectRequirements.trim(), {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("載入預算失敗");
-      const data = await res.json();
-      setBudgets(data);
+      if (!res.ok) throw new Error("載入申請經費款項失敗");
+      setBudgets(await res.json());
     } catch (err) {
       console.error(err);
-      setStatus("載入預算錯誤：" + err.message);
+      setStatus("載入申請經費款項錯誤：" + err.message);
     }
   };
 
@@ -151,6 +147,7 @@ function UserDashboard() {
     }
   };
 
+  // Webside frame
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Side Bar */}
@@ -159,18 +156,18 @@ function UserDashboard() {
         <nav className="flex flex-col space-y-2">
           {/* Create new request */}
           <button
-            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_CREATE_NEW_REQUEST ? "bg-gray-800" : ""}`}
-            onClick={() => setPage(PAGE_CREATE_NEW_REQUEST)}
+            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${activePage === PAGE_CREATE_NEW_REQUEST ? "bg-gray-800" : ""}`}
+            onClick={() => setActivePage(PAGE_CREATE_NEW_REQUEST)}
           >
             新增請款
           </button>
 
           {/* My pending request */}
           <button
-            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_PENDING_REQUEST ? "bg-gray-800" : ""}`}
+            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${activePage === PAGE_MY_PENDING_REQUEST ? "bg-gray-800" : ""}`}
             onClick={() => {
               setSelectRequirements("?status=pending");
-              setPage(PAGE_MY_PENDING_REQUEST);
+              setActivePage(PAGE_MY_PENDING_REQUEST);
             }}
           >
             審核中款項
@@ -178,10 +175,10 @@ function UserDashboard() {
 
           {/* My dealing request */}
           <button
-            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_DEALING_REQUEST ? "bg-gray-800" : ""}`}
+            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${activePage === PAGE_MY_DEALING_REQUEST ? "bg-gray-800" : ""}`}
             onClick={() => {
               setSelectRequirements("?status=approved");
-              setPage(PAGE_MY_DEALING_REQUEST);
+              setActivePage(PAGE_MY_DEALING_REQUEST);
             }}
           >
             處理中款項
@@ -189,10 +186,10 @@ function UserDashboard() {
 
           {/* My request record */}
           <button
-            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_REQUEST ? "bg-gray-800" : ""}`}
+            className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${activePage === PAGE_MY_REQUEST_RECORD ? "bg-gray-800" : ""}`}
             onClick={() => {
               setSelectRequirements("");
-              setPage(PAGE_MY_REQUEST);
+              setActivePage(PAGE_MY_REQUEST_RECORD);
             }}
           >
             我的請款紀錄
@@ -211,7 +208,7 @@ function UserDashboard() {
       {/* Main */}
       <main className="flex-1 p-8 overflow-y-auto">
         {/* Page of creating new request */}
-        {page === PAGE_CREATE_NEW_REQUEST && (
+        {activePage === PAGE_CREATE_NEW_REQUEST && (
           <>
           {/* Tab button */}
           <div className="flex border-b mb-6">
@@ -334,7 +331,7 @@ function UserDashboard() {
         )}
 
         {/* Page of my pending request */}
-        {page === PAGE_MY_PENDING_REQUEST && (
+        {activePage === PAGE_MY_PENDING_REQUEST && (
           <>
           {/* Tab button */}
           <div className="flex border-b mb-6">
@@ -448,7 +445,7 @@ function UserDashboard() {
         )}
 
         {/* Page of my dealing request */}
-        {page === PAGE_MY_DEALING_REQUEST && (
+        {activePage === PAGE_MY_DEALING_REQUEST && (
           <>
           {/* Tab button */}
           <div className="flex border-b mb-6">
@@ -562,7 +559,7 @@ function UserDashboard() {
         )}
 
         {/* Page of my request */}
-        {page === PAGE_MY_REQUEST && (
+        {activePage === PAGE_MY_REQUEST_RECORD && (
           <>
           {/* Tab button */}
           <div className="flex border-b mb-6">

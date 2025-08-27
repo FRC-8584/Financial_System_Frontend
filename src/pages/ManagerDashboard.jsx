@@ -1,24 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+// Server API routes
+const USER_API_ROUTE = 'http://localhost:3000/api/user';
+const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
+const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
+const DISBURSEMENT_API_ROUTE = 'http://localhost:3000/api/disbursement';
+
+// Pages
+const PAGE_PENDING_REQUEST = "pendingRequest";
+const PAGE_DEALING_REQUEST = "dealingRequest";
+const PAGE_REQUEST_RECORD = "requestRecord";
+
+// Tabs
+const TAB_REIMBURSEMENT = "reimbursement";
+const TAB_BUDGET = "budget";
 
 function ManagerDashboard() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");// JWT token
 
-  // 分頁狀態
-  const [activeTab, setActiveTab] = useState("reimbursement");
-
-  // 報帳管理
-  const [reimbursements, setReimbursements] = useState([]);
-  const [amount, setAmount] = useState("");
-  const [note, setNote] = useState("");
-  const [title, setTitle] = useState("");
-
+  // Webside view configration
+  const [activePage, setActivePage] = useState(PAGE_PENDING_REQUEST);
+  const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  
   // 報帳申請審核
   const [claims, setClaims] = useState([]);
 
-  // 使用者管理
-  const [users, setUsers] = useState([]);
+  // Select request payment conditions
+  const [selectRequirements, setSelectRequirements] = useState("");
+
+  // Data of request payments
+  const [budgets, setBudgets] = useState([]);
+  const [reimbursements, setReimbursements] = useState([]);
+  const [disbursements, setDisbursements] = useState([]);
 
   const [status, setStatus] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
@@ -30,131 +46,109 @@ function ManagerDashboard() {
     setIsSuccess(false);
   };
 
-  // 初始化載入
+  // Initialize
   useEffect(() => {
     if (!token) {
       navigate("/");
     } else {
-      loadTabData("reimbursement");
+      loadPageData(PAGE_PENDING_REQUEST);
     }
   }, [token, navigate]);
 
-  // 根據分頁載入資料
-  const loadTabData = async (tab) => {
-    setActiveTab(tab);
-    if (tab === "reimbursement") {
-      await fetchReimbursements();
-    } else if (tab === "claims") {
-      await fetchClaims();
-    } else if (tab === "users") {
-      await fetchUsers();
+  // Accroding pages to load data
+  const loadPageData = async (page) => {
+    setActivePage(page);
+    if (page === PAGE_PENDING_REQUEST) {
+      await fetchReimbursements("?status=pending");
+      await fetchBudgets("?status=pending");
+    }
+    else if (page === PAGE_DEALING_REQUEST) {
+      await fetchReimbursements("?status=approved");
+      await fetchBudgets("?status=approved");
+    }
+    else if (page === PAGE_REQUEST_RECORD) {
+      await fetchDisbursements();
     }
   };
 
-  // API 載入報帳紀錄
-  const fetchReimbursements = async () => {
+  // Get budget records
+  const fetchBudgets = async (param = "") => {
     try {
-      const res = await fetch("http://localhost:3000/api/reimbursement", {
+      const res = await fetch(BUDGET_API_ROUTE + "/" + param.trim(), {
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("資料載入失敗");
+      if (!res.ok) throw new Error("載入失敗");
+      setBudgets(await res.json());
+    } catch (err) {
+      handleError(err, "載入申請經費款項錯誤")
+    }
+  };
+
+  // Get reimbursement records
+  const fetchReimbursements = async (param = "") => {
+    try {
+      const res = await fetch(REIMBURSEMENT_API_ROUTE + "/" + param.trim(), {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("載入失敗");
       setReimbursements(await res.json());
     } catch (err) {
-      handleError(err, "載入錯誤");
+      handleError(err, "載入報帳款項錯誤")
     }
   };
 
-  // API 載入報帳申請（其實就是報帳資料，只是 pending 狀態的）
-  const fetchClaims = async () => {
+  // Get disbursement records
+  const fetchDisbursements = async (param = "") => {
     try {
-      const res = await fetch("http://localhost:3000/api/reimbursement?status=pending", {
+      const res = await fetch(DISBURSEMENT_API_ROUTE + "/" + param.trim(), {
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("申請資料載入失敗");
-      setClaims(await res.json());
+      if (!res.ok) throw new Error("載入失敗");
+      setDisbursements(await res.json());
     } catch (err) {
-      handleError(err, "載入錯誤");
+      handleError(err, "載入請款紀錄錯誤")
     }
   };
 
-  // API 載入使用者
-  const fetchUsers = async () => {
+  // Mark request payment as approved or rejected
+  const handleVerify = async (id, status) => {
     try {
-      const res = await fetch("http://localhost:3000/api/user", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("使用者資料載入失敗");
-      setUsers(await res.json());
-    } catch (err) {
-      handleError(err, "載入錯誤");
-    }
-  };
-
-  // 新增報帳
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("http://localhost:3000/api/reimbursement", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount: Number(amount), title, description: note }),
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "無法上傳");
-      }
-
-      setStatus("新增成功！");
-      setIsSuccess(true);
-      setAmount("");
-      setNote("");
-      setTitle("");
-      await fetchReimbursements();
-    } catch (err) {
-      handleError(err, "無法上傳");
-    }
-  };
-
-  // 核准 / 拒絕報帳申請
-  const handleReviewClaim = async (id, action) => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/reimbursement/${id}/status`, {
+      const res = await fetch(REIMBURSEMENT_API_ROUTE + `/${id}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: action === "approve" ? "approved" : "rejected" }),
+        body: JSON.stringify({ status }),
       });
       if (!res.ok) throw new Error("操作失敗");
-      await fetchClaims();
+      setStatus("已核銷該款項！");
     } catch (err) {
       handleError(err, "操作失敗");
     }
   };
 
-  // 標記已結清
+  // Mark request payment as settled
   const handleSettle = async (id) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/reimbursement/${id}/settle`, {
+      const res = await fetch(REIMBURSEMENT_API_ROUTE + `/${id}/settle`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("結清失敗");
-      await fetchReimbursements();
+      setStatus("已結清該款項！");
     } catch (err) {
       handleError(err, "結清失敗");
     }
   };
 
-  // 匯出報帳 Excel
+  // Export Excel
   const handleExport = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/reimbursement/export", {
+      const res = await fetch(REIMBURSEMENT_API_ROUTE + "/export", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("匯出失敗");
@@ -171,48 +165,33 @@ function ManagerDashboard() {
     }
   };
 
-  // 刪除使用者
-  const handleDeleteUser = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/user/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("刪除失敗");
-      await fetchUsers();
-    } catch (err) {
-      handleError(err, "刪除失敗");
-    }
-  };
-
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* 側邊欄 */}
+      {/* Side bar */}
       <aside className="w-64 bg-teal-800 text-white p-6 flex flex-col space-y-4">
-        <h2 className="text-2xl font-bold mb-6">管理面板</h2>
+        <h2 className="text-2xl font-bold mb-6">財務端</h2>
         <nav className="flex flex-col space-y-2">
-          <button onClick={() => loadTabData("reimbursement")} className="text-left hover:bg-teal-700 px-3 py-2 rounded">
-            報帳管理
+          <button onClick={() => loadPageData(PAGE_PENDING_REQUEST)} className="text-left hover:bg-teal-700 px-3 py-2 rounded">
+            待審核請款
           </button>
-          <button onClick={() => loadTabData("claims")} className="text-left hover:bg-teal-700 px-3 py-2 rounded">
-            報帳申請審核
+          <button onClick={() => loadPageData(PAGE_DEALING_REQUEST)} className="text-left hover:bg-teal-700 px-3 py-2 rounded">
+            待處理請款
           </button>
-          <button onClick={() => loadTabData("users")} className="text-left hover:bg-teal-700 px-3 py-2 rounded">
-            使用者管理
+          <button onClick={() => loadPageData(PAGE_REQUEST_RECORD)} className="text-left hover:bg-teal-700 px-3 py-2 rounded">
+            歷史請款紀錄
           </button>
+
+          {/* Logout */}
           <button
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/");
-            }}
-            className="text-left hover:bg-teal-700 px-3 py-2 rounded"
+            className="text-left hover:bg-gray-800 px-3 py-2 rounded"
+            onClick={() => setShowLogoutConfirm(true)}
           >
             登出
           </button>
         </nav>
       </aside>
 
-      {/* 主內容 */}
+      {/* Main */}
       <main className="flex-1 p-8 overflow-y-auto">
         {status && (
           <p className={`text-sm mb-4 font-medium ${
@@ -224,107 +203,329 @@ function ManagerDashboard() {
           </p>
         )}
 
-        {/* 報帳管理 */}
-        {activeTab === "reimbursement" && (
+        {/* Pending request */}
+        {activePage === PAGE_PENDING_REQUEST && (
           <>
-            <h1 className="text-4xl font-bold text-teal-600 mb-6">報帳管理</h1>
-            <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-              <div>
-                <label className="block mb-1 font-medium text-gray-700">金額：</label>
-                <input type="number" className="w-full border border-gray-300 px-4 py-2 rounded" value={amount} onChange={(e) => setAmount(e.target.value)} required />
-              </div>
-              <div>
-                <label className="block mb-1 font-medium text-gray-700">標題：</label>
-                <input type="text" className="w-full border border-gray-300 px-4 py-2 rounded" value={title} onChange={(e) => setTitle(e.target.value)} required />
-              </div>
-              <div>
-                <label className="block mb-1 font-medium text-gray-700">備註：</label>
-                <input type="text" className="w-full border border-gray-300 px-4 py-2 rounded" value={note} onChange={(e) => setNote(e.target.value)} required />
-              </div>
-              <button type="submit" className="bg-teal-500 text-white px-6 py-2 rounded hover:bg-teal-600">新增報帳</button>
-            </form>
+          {/* Tab button */}
+          <div className="flex border-b mb-6">
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === TAB_REIMBURSEMENT ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab(TAB_REIMBURSEMENT)}
+            >
+              審核中報帳款項
+            </button>
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === TAB_BUDGET ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab(TAB_BUDGET)}
+            >
+              審核中申請經費款項
+            </button>
+          </div>
 
-            <div className="flex justify-between items-center mt-10 mb-4">
-              <h2 className="text-2xl font-semibold">報帳紀錄</h2>
-              <button onClick={handleExport} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">匯出 Excel</button>
-            </div>
+          {/* Tab of pending reimbursement */}
+          {activeTab === TAB_REIMBURSEMENT && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">待審核報帳</h1>
+            <table className="w-full border-collapse">
+              {reimbursements.length > 0 ? (
+                <>
+                  <thead>
+                    <tr className="bg-gray-200 text-left">
+                      <th className="p-3">品項</th>
+                      <th className="p-3">金額</th>
+                      <th className="p-3">申請時間</th>
+                      <th className="p-3">單據</th>
+                      <th className="p-2"></th>
+                      <th className="p-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reimbursements.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                        <td className="p-3">
+                          <a
+                            href={rec.receipt_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-black underline"
+                          >
+                            查看
+                          </a>
+                        </td>
+                        <td className="p-2">
+                          <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                            onClick={() => {
+                              handleVerify(rec.id, 'approved');
+                            }}
+                          >
+                            審核通過
+                          </button>
+                        </td>
+                        <td className="p-2">
+                          <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                            onClick={() => {
+                              handleVerify(rec.id, 'rejected');
+                            }}
+                          >
+                            審核不通過
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </div>
+          )}
 
-            {reimbursements.length === 0 ? (
-              <p className="text-gray-500">目前沒有紀錄</p>
-            ) : (
-              <ul className="space-y-4 max-w-3xl">
-                {reimbursements.map((r) => (
-                  <li key={r.id} className={`p-4 rounded-lg border-l-4 ${r.status === "approved" ? "bg-green-50 border-green-400" : r.status === "rejected" ? "bg-red-50 border-red-400" : "bg-yellow-50 border-yellow-400"}`}>
-                    <div className="text-lg font-semibold">金額：{r.amount}</div>
-                    <div>標題：{r.title || "未填"}</div>
-                    <div>備註：{r.description}</div>
-                    <div>狀態：{r.status}</div>
-                    <div className="text-sm text-gray-500">時間：{new Date(r.createdAt).toLocaleString()}</div>
-                    {r.status === "approved" && !r.settled && (
-                      <button onClick={() => handleSettle(r.id)} className="mt-2 bg-purple-500 text-white px-3 py-1 rounded">標記已結清</button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
-        )}
-
-        {/* 報帳申請審核 */}
-        {activeTab === "claims" && (
-          <>
-            <h1 className="text-4xl font-bold text-teal-600 mb-6">報帳申請審核</h1>
-            {claims.length === 0 ? (
-              <p className="text-gray-500">目前沒有申請</p>
-            ) : (
-              <ul className="space-y-4 max-w-3xl">
-                {claims.map((c) => (
-                  <li key={c.id} className="p-4 rounded-lg bg-white shadow border">
-                    <div>申請人：{c.user?.name || "未知"}</div>
-                    <div>金額：{c.amount}</div>
-                    <div>說明：{c.description}</div>
-                    <div className="space-x-2 mt-2">
-                      <button onClick={() => handleReviewClaim(c.id, "approve")} className="bg-green-500 text-white px-3 py-1 rounded">核准</button>
-                      <button onClick={() => handleReviewClaim(c.id, "reject")} className="bg-red-500 text-white px-3 py-1 rounded">拒絕</button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
-        )}
-
-        {/* 使用者管理 */}
-        {activeTab === "users" && (
-          <>
-            <h1 className="text-4xl font-bold text-teal-600 mb-6">使用者管理</h1>
-            {users.length === 0 ? (
-              <p className="text-gray-500">目前沒有使用者</p>
-            ) : (
-              <table className="min-w-full border">
+          {/* Tab of pending budget */}
+          {activeTab === TAB_BUDGET && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">待審核申請經費款項</h1>
+            <table className="w-full border-collapse">
+              {budgets.length > 0 ? (
+              <>
                 <thead>
-                  <tr className="bg-gray-200">
-                    <th className="p-2 border">ID</th>
-                    <th className="p-2 border">名稱</th>
-                    <th className="p-2 border">角色</th>
-                    <th className="p-2 border">操作</th>
+                  <tr className="bg-gray-200 text-left">
+                    <th className="p-3">品項</th>
+                    <th className="p-3">金額</th>
+                    <th className="p-3">申請時間</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u) => (
-                    <tr key={u.id}>
-                      <td className="p-2 border">{u.id}</td>
-                      <td className="p-2 border">{u.name}</td>
-                      <td className="p-2 border">{u.role}</td>
-                      <td className="p-2 border">
-                        <button onClick={() => handleDeleteUser(u.id)} className="bg-red-500 text-white px-3 py-1 rounded">刪除</button>
-                      </td>
-                    </tr>
-                  ))}
+                    {budgets.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
                 </tbody>
-              </table>
-            )}
+              </>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </div>
+          )}
           </>
+        )}
+
+        {/* Dealing request */}
+        {activePage === PAGE_DEALING_REQUEST && (
+          <>
+          {/* Tab button */}
+          <div className="flex border-b mb-6">
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === TAB_REIMBURSEMENT ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab(TAB_REIMBURSEMENT)}
+            >
+              處理中報帳款項
+            </button>
+            <button
+              className={`px-4 py-2 font-bold ${
+                activeTab === TAB_BUDGET ? "border-b-4 border-black-500 text-black-500" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab(TAB_BUDGET)}
+            >
+              處理中申請經費款項
+            </button>
+          </div>
+
+          {/* Tab of dealing reimbursement */}
+          {activeTab === TAB_REIMBURSEMENT && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">處理中報帳款項</h1>
+            <table className="w-full border-collapse">
+              {reimbursements.length > 0 ? (
+                <>
+                  <thead>
+                    <tr className="bg-gray-200 text-left">
+                      <th className="p-3">品項</th>
+                      <th className="p-3">金額</th>
+                      <th className="p-3">申請時間</th>
+                      <th className="p-3">單據</th>
+                      <th className="p-3"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reimbursements.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                        <td className="p-3">
+                          <a
+                            href={rec.receipt_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-black underline"
+                          >
+                            查看
+                          </a>
+                        </td>
+                        <td className="p-3">
+                          <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                            onClick={() => {
+                              handleVerify(rec.id);
+                            }}
+                          >
+                            標記結清
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </div>
+          )}
+
+          {/* Tab of dealing budget */}
+          {activeTab === TAB_BUDGET && (
+          <div>
+            <h1 className="text-3xl font-bold mb-6">處理中申請經費款項</h1>
+            <table className="w-full border-collapse">
+              {budgets.length > 0 ? (
+              <>
+                <thead>
+                  <tr className="bg-gray-200 text-left">
+                    <th className="p-3">品項</th>
+                    <th className="p-3">金額</th>
+                    <th className="p-3">申請時間</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {budgets.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                        <td className="p-3">
+                          <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                            onClick={() => {
+                              handleVerify(rec.id);
+                            }}
+                          >
+                            標記結清
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </div>
+          )}
+          </>
+        )}
+
+        {/* Request records */}
+        {activePage === PAGE_REQUEST_RECORD && (
+          <>
+          {/* Disbursement record */}
+          <div>
+            <h1 className="text-3xl font-bold mb-6">歷史請款紀錄</h1>
+            <table className="w-full border-collapse">
+              {disbursements.length > 0 ? (
+              <>
+                <thead>
+                  <tr className="bg-gray-200 text-left">
+                    <th className="p-3">品項</th>
+                    <th className="p-3">金額</th>
+                    <th className="p-3">結清時間</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {disbursements.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{new Date(rec.settledAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </div>
+          </>
+        )}
+
+        {/* Logout confirm */}
+        {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg">
+            <p className="mb-4 text-lg">確定要登出嗎？</p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                取消
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  navigate("/");
+                }}
+              >
+                確定
+              </button>
+            </div>
+          </div>
+        </div>
         )}
       </main>
     </div>
