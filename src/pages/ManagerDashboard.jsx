@@ -31,13 +31,13 @@ function ManagerDashboard() {
   };
 
   // 初始化載入
-  // useEffect(() => {
-  //   if (!token) {
-  //     navigate("/");
-  //   } else {
-  //     loadTabData("reimbursement");
-  //   }
-  // }, [token, navigate]);
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    } else {
+      loadTabData("reimbursement");
+    }
+  }, [token, navigate]);
 
   // 根據分頁載入資料
   const loadTabData = async (tab) => {

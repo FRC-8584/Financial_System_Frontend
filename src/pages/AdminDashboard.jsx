@@ -73,18 +73,18 @@ function AdminDashboard() {
   };
 
   // 使用者管理：載入後端資料
-  // useEffect(() => {
-  //   if (!token) {
-  //     navigate("/");
-  //     return;
-  //   }
-  //   fetch("/api/user/", {
-  //     headers: { Authorization: `Bearer ${token}` },
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => setUsers(data))
-  //     .catch((err) => console.error(err));
-  // }, [token, navigate]);
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    fetch("/api/user/", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+      .catch((err) => console.error(err));
+  }, [token, navigate]);
 
   // 記帳管理新增
   const handleAddAccounting = (e) => {
