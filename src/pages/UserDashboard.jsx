@@ -36,6 +36,11 @@ function UserDashboard() {
   const [budgetAmount, setBudgetAmount] = useState("");
   const [budgetDescription, setBudgetDescription] = useState("");
 
+  // Record selected request payment ids
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  const [selectRequirements, setSelectRequirements] = useState("");
+
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
 
@@ -53,8 +58,9 @@ function UserDashboard() {
 
   // Get reimbursement records
   const fetchReimbursements = async () => {
+    console.log(selectRequirements);
     try {
-      const res = await fetch(REIMBURSEMENT_API_ROUTE + '/me', {
+      const res = await fetch(REIMBURSEMENT_API_ROUTE + '/me' + selectRequirements.trim(), {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("載入紀錄失敗");
@@ -68,8 +74,9 @@ function UserDashboard() {
 
   // Get budget records
   const fetchBudgets = async () => {
+    console.log(selectRequirements);
     try {
-      const res = await fetch(BUDGET_API_ROUTE + '/me', {
+      const res = await fetch(BUDGET_API_ROUTE + '/me' + selectRequirements.trim(), {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("載入預算失敗");
@@ -158,7 +165,12 @@ function UserDashboard() {
           {/* My pending request */}
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_PENDING_REQUEST ? "bg-gray-800" : ""}`}
-            onClick={() => setPage(PAGE_MY_PENDING_REQUEST)}
+            onClick={() => {
+              selectRequirements("?status=pending");
+              fetchBudgets();
+              fetchReimbursements();
+              setPage(PAGE_MY_PENDING_REQUEST);
+            }}
           >
             審核中款項
           </button>
@@ -166,7 +178,12 @@ function UserDashboard() {
           {/* My dealing request */}
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_DEALING_REQUEST ? "bg-gray-800" : ""}`}
-            onClick={() => setPage(PAGE_MY_DEALING_REQUEST)}
+            onClick={() => {
+              selectRequirements("?status=approved");
+              fetchBudgets();
+              fetchReimbursements();
+              setPage(PAGE_MY_DEALING_REQUEST);
+            }}
           >
             處理中款項
           </button>
@@ -174,7 +191,12 @@ function UserDashboard() {
           {/* My request record */}
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_REQUEST ? "bg-gray-800" : ""}`}
-            onClick={() => setPage(PAGE_MY_REQUEST)}
+            onClick={() => {
+              selectRequirements("");
+              fetchBudgets();
+              fetchReimbursements();
+              setPage(PAGE_MY_REQUEST);
+            }}
           >
             我的請款紀錄
           </button>
