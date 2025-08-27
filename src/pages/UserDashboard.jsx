@@ -36,14 +36,17 @@ function UserDashboard() {
   const [budgetAmount, setBudgetAmount] = useState("");
   const [budgetDescription, setBudgetDescription] = useState("");
 
-  // Record selected request payment ids
-  const [selectedIds, setSelectedIds] = useState([]);
+  // Record selected request payment ids (Not use yet)
+  // const [selectedIds, setSelectedIds] = useState([]);
 
+  // Select request payment conditions
   const [selectRequirements, setSelectRequirements] = useState("");
 
+  // Data of request payments
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
 
+  // Status
   const [status, setStatus] = useState("");
 
   // Initialize
@@ -54,7 +57,7 @@ function UserDashboard() {
       fetchReimbursements();
       fetchBudgets();
     }
-  }, [token, navigate]);
+  }, [token, navigate, selectRequirements]);
 
   // Get reimbursement records
   const fetchReimbursements = async () => {
@@ -166,9 +169,7 @@ function UserDashboard() {
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_PENDING_REQUEST ? "bg-gray-800" : ""}`}
             onClick={() => {
-              selectRequirements("?status=pending");
-              fetchBudgets();
-              fetchReimbursements();
+              setSelectRequirements("?status=pending");
               setPage(PAGE_MY_PENDING_REQUEST);
             }}
           >
@@ -179,9 +180,7 @@ function UserDashboard() {
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_DEALING_REQUEST ? "bg-gray-800" : ""}`}
             onClick={() => {
-              selectRequirements("?status=approved");
-              fetchBudgets();
-              fetchReimbursements();
+              setSelectRequirements("?status=approved");
               setPage(PAGE_MY_DEALING_REQUEST);
             }}
           >
@@ -192,9 +191,7 @@ function UserDashboard() {
           <button
             className={`text-left px-3 py-2 rounded hover:bg-gray-800 ${page === PAGE_MY_REQUEST ? "bg-gray-800" : ""}`}
             onClick={() => {
-              selectRequirements("");
-              fetchBudgets();
-              fetchReimbursements();
+              setSelectRequirements("");
               setPage(PAGE_MY_REQUEST);
             }}
           >
@@ -362,38 +359,49 @@ function UserDashboard() {
           {/* Tab of my pending reimbursement */}
           {activeTab === TAB_REIMBURSEMENT && (
           <div>
-            <h1 className="text-3xl font-bold mb-6">審核中報帳款項</h1>
+            <h1 className="text-3xl font-bold mb-6">我的報帳紀錄</h1>
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="p-3">品項</th>
-                  <th className="p-3">金額</th>
-                  <th className="p-3">狀態</th>
-                  <th className="p-3">申請時間</th>
-                  <th className="p-3">單據</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reimbursements.length > 0 ? (
-                  reimbursements.map((rec) => (
-                    <tr key={rec.id} className="border-b">
-                      <td className="p-3">{rec.title}</td>
-                      <td className="p-3">{rec.amount}</td>
-                      <td className="p-3">{rec.status}</td>
-                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
-                      <td className="p-3">
-                        <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
-                          查看
-                        </a>
-                      </td>
+              {reimbursements.length > 0 ? (
+                <>
+                  <thead>
+                    <tr className="bg-gray-200 text-left">
+                      <th className="p-3">品項</th>
+                      <th className="p-3">金額</th>
+                      <th className="p-3">狀態</th>
+                      <th className="p-3">申請時間</th>
+                      <th className="p-3">單據</th>
                     </tr>
-                  ))
-                ) : (
+                  </thead>
+                  <tbody>
+                    {reimbursements.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{rec.status}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                        <td className="p-3">
+                          <a
+                            href={rec.receipt_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-black underline"
+                          >
+                            查看
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              ) : (
+                <tbody>
                   <tr>
-                    <td className="p-3" colSpan="5">尚無紀錄</td>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
                   </tr>
-                )}
-              </tbody>
+                </tbody>
+              )}
             </table>
           </div>
           )}
@@ -401,32 +409,38 @@ function UserDashboard() {
           {/* Tab of my pending budget */}
           {activeTab === TAB_BUDGET && (
           <div>
-            <h1 className="text-3xl font-bold mb-6">審核中申請經費款項</h1>
+            <h1 className="text-3xl font-bold mb-6">我的申請經費紀錄</h1>
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="p-3">品項</th>
-                  <th className="p-3">金額</th>
-                  <th className="p-3">狀態</th>
-                  <th className="p-3">申請時間</th>
-                </tr>
-              </thead>
-              <tbody>
-                {budgets.length > 0 ? (
-                  budgets.map((rec) => (
-                    <tr key={rec.id} className="border-b">
-                      <td className="p-3">{rec.title}</td>
-                      <td className="p-3">{rec.amount}</td>
-                      <td className="p-3">{rec.status}</td>
-                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td className="p-3" colSpan="5">尚無紀錄</td>
+              {budgets.length > 0 ? (
+              <>
+                <thead>
+                  <tr className="bg-gray-200 text-left">
+                    <th className="p-3">品項</th>
+                    <th className="p-3">金額</th>
+                    <th className="p-3">狀態</th>
+                    <th className="p-3">申請時間</th>
                   </tr>
-                )}
-              </tbody>
+                </thead>
+                <tbody>
+                    {budgets.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{rec.status}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
+                  </tr>
+                </tbody>
+              )}
             </table>
           </div>
           )}
@@ -459,38 +473,49 @@ function UserDashboard() {
           {/* Tab of my dealing reimbursement */}
           {activeTab === TAB_REIMBURSEMENT && (
           <div>
-            <h1 className="text-3xl font-bold mb-6">處理中報帳款項</h1>
+            <h1 className="text-3xl font-bold mb-6">我的報帳紀錄</h1>
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="p-3">品項</th>
-                  <th className="p-3">金額</th>
-                  <th className="p-3">狀態</th>
-                  <th className="p-3">申請時間</th>
-                  <th className="p-3">單據</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reimbursements.length > 0 ? (
-                  reimbursements.map((rec) => (
-                    <tr key={rec.id} className="border-b">
-                      <td className="p-3">{rec.title}</td>
-                      <td className="p-3">{rec.amount}</td>
-                      <td className="p-3">{rec.status}</td>
-                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
-                      <td className="p-3">
-                        <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
-                          查看
-                        </a>
-                      </td>
+              {reimbursements.length > 0 ? (
+                <>
+                  <thead>
+                    <tr className="bg-gray-200 text-left">
+                      <th className="p-3">品項</th>
+                      <th className="p-3">金額</th>
+                      <th className="p-3">狀態</th>
+                      <th className="p-3">申請時間</th>
+                      <th className="p-3">單據</th>
                     </tr>
-                  ))
-                ) : (
+                  </thead>
+                  <tbody>
+                    {reimbursements.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{rec.status}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                        <td className="p-3">
+                          <a
+                            href={rec.receipt_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-black underline"
+                          >
+                            查看
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              ) : (
+                <tbody>
                   <tr>
-                    <td className="p-3" colSpan="5">尚無紀錄</td>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
                   </tr>
-                )}
-              </tbody>
+                </tbody>
+              )}
             </table>
           </div>
           )}
@@ -498,32 +523,38 @@ function UserDashboard() {
           {/* Tab of my dealing budget */}
           {activeTab === TAB_BUDGET && (
           <div>
-            <h1 className="text-3xl font-bold mb-6">處理中申請經費款項</h1>
+            <h1 className="text-3xl font-bold mb-6">我的申請經費紀錄</h1>
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="p-3">品項</th>
-                  <th className="p-3">金額</th>
-                  <th className="p-3">狀態</th>
-                  <th className="p-3">申請時間</th>
-                </tr>
-              </thead>
-              <tbody>
-                {budgets.length > 0 ? (
-                  budgets.map((rec) => (
-                    <tr key={rec.id} className="border-b">
-                      <td className="p-3">{rec.title}</td>
-                      <td className="p-3">{rec.amount}</td>
-                      <td className="p-3">{rec.status}</td>
-                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td className="p-3" colSpan="5">尚無紀錄</td>
+              {budgets.length > 0 ? (
+              <>
+                <thead>
+                  <tr className="bg-gray-200 text-left">
+                    <th className="p-3">品項</th>
+                    <th className="p-3">金額</th>
+                    <th className="p-3">狀態</th>
+                    <th className="p-3">申請時間</th>
                   </tr>
-                )}
-              </tbody>
+                </thead>
+                <tbody>
+                    {budgets.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{rec.status}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
+                  </tr>
+                </tbody>
+              )}
             </table>
           </div>
           )}
@@ -558,36 +589,47 @@ function UserDashboard() {
           <div>
             <h1 className="text-3xl font-bold mb-6">我的報帳紀錄</h1>
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="p-3">品項</th>
-                  <th className="p-3">金額</th>
-                  <th className="p-3">狀態</th>
-                  <th className="p-3">申請時間</th>
-                  <th className="p-3">單據</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reimbursements.length > 0 ? (
-                  reimbursements.map((rec) => (
-                    <tr key={rec.id} className="border-b">
-                      <td className="p-3">{rec.title}</td>
-                      <td className="p-3">{rec.amount}</td>
-                      <td className="p-3">{rec.status}</td>
-                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
-                      <td className="p-3">
-                        <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
-                          查看
-                        </a>
-                      </td>
+              {reimbursements.length > 0 ? (
+                <>
+                  <thead>
+                    <tr className="bg-gray-200 text-left">
+                      <th className="p-3">品項</th>
+                      <th className="p-3">金額</th>
+                      <th className="p-3">狀態</th>
+                      <th className="p-3">申請時間</th>
+                      <th className="p-3">單據</th>
                     </tr>
-                  ))
-                ) : (
+                  </thead>
+                  <tbody>
+                    {reimbursements.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{rec.status}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                        <td className="p-3">
+                          <a
+                            href={rec.receipt_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-black underline"
+                          >
+                            查看
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              ) : (
+                <tbody>
                   <tr>
-                    <td className="p-3" colSpan="5">尚無紀錄</td>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
                   </tr>
-                )}
-              </tbody>
+                </tbody>
+              )}
             </table>
           </div>
           )}
@@ -597,30 +639,36 @@ function UserDashboard() {
           <div>
             <h1 className="text-3xl font-bold mb-6">我的申請經費紀錄</h1>
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="p-3">品項</th>
-                  <th className="p-3">金額</th>
-                  <th className="p-3">狀態</th>
-                  <th className="p-3">申請時間</th>
-                </tr>
-              </thead>
-              <tbody>
-                {budgets.length > 0 ? (
-                  budgets.map((rec) => (
-                    <tr key={rec.id} className="border-b">
-                      <td className="p-3">{rec.title}</td>
-                      <td className="p-3">{rec.amount}</td>
-                      <td className="p-3">{rec.status}</td>
-                      <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td className="p-3" colSpan="5">尚無紀錄</td>
+              {budgets.length > 0 ? (
+              <>
+                <thead>
+                  <tr className="bg-gray-200 text-left">
+                    <th className="p-3">品項</th>
+                    <th className="p-3">金額</th>
+                    <th className="p-3">狀態</th>
+                    <th className="p-3">申請時間</th>
                   </tr>
-                )}
-              </tbody>
+                </thead>
+                <tbody>
+                    {budgets.map((rec) => (
+                      <tr key={rec.id} className="border-b">
+                        <td className="p-3">{rec.title}</td>
+                        <td className="p-3">{rec.amount}</td>
+                        <td className="p-3">{rec.status}</td>
+                        <td className="p-3">{new Date(rec.createdAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td className="p-3 text-center" colSpan="5">
+                      尚無紀錄
+                    </td>
+                  </tr>
+                </tbody>
+              )}
             </table>
           </div>
           )}
