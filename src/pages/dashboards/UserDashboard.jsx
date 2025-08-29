@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { CreateRequestPage } from "../user/CreateRequestPage";
 import { MyPendingRequestPage } from "../user/MyPendingRequestPage";
 import { MyDealingRequestPage } from "../user/MyDealingRequestPage";
 import { MyRequestRecordPage } from "../user/MyRequestRecordPage";
-
 import { LogoutConfirm } from "../../components/LogoutConfirm";
+
 // Pages
 const PAGE_CREATE_NEW_REQUEST = "createNewRequest";
 const PAGE_MY_PENDING_REQUEST = "myPendingRequest";
