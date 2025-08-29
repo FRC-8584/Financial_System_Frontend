@@ -29,9 +29,14 @@ function UserCreateRequest() {
     description: "",
   });
 
-  // 更新 state
   const handleChange = (setter) => (e) => {
     const { name, value, files } = e.target;
+
+    if (name === "amount") {
+      const num = Number(value);
+      if (num < 0) return;
+    }
+
     setter((prev) => ({
       ...prev,
       [name]: files ? files[0] : value,

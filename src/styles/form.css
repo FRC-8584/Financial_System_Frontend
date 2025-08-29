@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 400px;
+  max-width: 700px;
   margin: auto;
   padding: 24px;
   border: 1px solid #ccc;
@@ -21,22 +21,23 @@
 }
 
 .form-input {
-  padding: 8px 12px;
+  padding: 10px 15px;
   border: 1px solid #aaa;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .form-submit {
   padding: 10px 16px;
+  max-width: 100px;
   border: none;
   border-radius: 8px;
-  background-color: teal;
+  background-color: rgb(9, 97, 168);
   color: white;
   font-weight: bold;
   cursor: pointer;
 }
 
 .form-submit:hover {
-  background-color: darkslategray;
+  background-color: rgb(9, 75, 129);
 }
