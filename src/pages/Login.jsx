@@ -46,15 +46,15 @@ function Login() {
 
   return (
     <div className="login-container">
-      <h2 className="login-title">Financial-system</h2>
+      <h2 className="login-title">FRC8584 財務系統</h2>
 
       <div className="login-field">
-        <label>帳號</label>
+        <label>電子郵件</label>
         <input
-          type="text"
+          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="請輸入帳號"
+          placeholder="請輸入電子郵件"
         />
       </div>
 
