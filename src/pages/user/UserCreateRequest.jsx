@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Tabs } from "../../components/Tabs";
-
-// Server API routes
-const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
-const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
+import { Tabs } from "../../components/Tabs.jsx";
+import Form from "../../components/form/Form.jsx";
+import InputField from "../../components/form/InputField.jsx";
+import SubmitButton from "../../components/form/SubmitButton.jsx";
+import { submitReimbursement, submitBudget } from "../../utils/formHandler.util.js";
 
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
@@ -14,186 +14,154 @@ function UserCreateRequest() {
   const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
   const [status, setStatus] = useState("");
 
-  // Reimbursement request form
-  const [reimbursementTitle, setReimbursementTitle] = useState("");
-  const [reimbursementAmount, setReimbursementAmount] = useState("");
-  const [reimbursementDescription, setReimbursementDescription] = useState("");
-  const [reimbursementReceipt, setReimbursementReceipt] = useState(null);
+  // Reimbursement state
+  const [reimbursementForm, setReimbursementForm] = useState({
+    title: "",
+    amount: "",
+    description: "",
+    receipt: null,
+  });
 
-  // Budget request form
-  const [budgetTitle, setBudgetTitle] = useState("");
-  const [budgetAmount, setBudgetAmount] = useState("");
-  const [budgetDescription, setBudgetDescription] = useState("");
+  // Budget state
+  const [budgetForm, setBudgetForm] = useState({
+    title: "",
+    amount: "",
+    description: "",
+  });
 
-  // Send reimbursement request
+  // 更新 state
+  const handleChange = (setter) => (e) => {
+    const { name, value, files } = e.target;
+    setter((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+  };
+
   const handleReimbursementSubmit = async (e) => {
     e.preventDefault();
-    if (!reimbursementReceipt) {
+    if (!reimbursementForm.receipt) {
       setStatus("請上傳單據圖片");
       return;
     }
     const formData = new FormData();
-    formData.append("title", reimbursementTitle);
-    formData.append("amount", reimbursementAmount);
-    formData.append("description", reimbursementDescription);
-    formData.append("receipt", reimbursementReceipt);
+    formData.append("title", reimbursementForm.title);
+    formData.append("amount", reimbursementForm.amount);
+    formData.append("description", reimbursementForm.description);
+    formData.append("receipt", reimbursementForm.receipt);
 
     try {
-      const res = await fetch(REIMBURSEMENT_API_ROUTE + '/', {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-      if (!res.ok) throw new Error("請款送出失敗");
-
-      setStatus("款項已送出！");
-      setReimbursementTitle("");
-      setReimbursementAmount("");
-      setReimbursementDescription("");
-      setReimbursementReceipt(null);
+      await submitReimbursement(token, formData);
+      setStatus("報帳已送出！");
+      setReimbursementForm({ title: "", amount: "", description: "", receipt: null });
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
   };
 
-  // Send budget request
   const handleBudgetSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(BUDGET_API_ROUTE + '/', {
-        method: "POST",
-        headers: { 
-          Authorization: `Bearer ${token}` ,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: budgetTitle,
-          amount: budgetAmount,
-          description: budgetDescription,
-        }),
-      });
-      if (!res.ok) throw new Error("請款送出失敗");
-
-      setStatus("款項已送出！");
-      setBudgetTitle("");
-      setBudgetAmount("");
-      setBudgetDescription("");
+      await submitBudget(token, budgetForm);
+      setStatus("經費申請已送出！");
+      setBudgetForm({ title: "", amount: "", description: "" });
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
   };
 
   return (
-  <>
-  {/* Tab button */}
-  <Tabs
-    activeTab={activeTab}
-    setActiveTab={setActiveTab}
-    tabs={[
-      { value: TAB_REIMBURSEMENT, label: "報帳" },
-      { value: TAB_BUDGET, label: "申請經費" },
-    ]}
-  />
+    <>
+      {/* Tabs */}
+      <Tabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        tabs={[
+          { value: TAB_REIMBURSEMENT, label: "報帳" },
+          { value: TAB_BUDGET, label: "申請經費" },
+        ]}
+      />
 
-  {/* Tab of creating new reimbursement */}
-  {activeTab === TAB_REIMBURSEMENT && (
-  <div id="createReimbursement" class="tab-content active">
-    <h1 className="text-3xl font-bold mb-6">新增報帳</h1>
-    <form onSubmit={handleReimbursementSubmit} className="space-y-4" encType="multipart/form-data">
-      <div>
-        <label className="block mb-1 font-semibold">品項：</label>
-        <input
-          type="text"
-          className="w-full border px-3 py-2 rounded"
-          value={reimbursementTitle}
-          onChange={(e) => setReimbursementTitle(e.target.value)}
-          required
-          />
-      </div>
-      <div>
-        <label className="block mb-1 font-semibold">報帳金額：</label>
-        <input
-          type="number"
-          className="w-full border px-3 py-2 rounded"
-          value={reimbursementAmount}
-          onChange={(e) => setReimbursementAmount(e.target.value)}
-          required
-          />
-      </div>
-      <div>
-        <label className="block mb-1 font-semibold">備註：</label>
-        <textarea
-          className="w-full border px-3 py-2 rounded"
-          value={reimbursementDescription}
-          onChange={(e) => setReimbursementDescription(e.target.value)}
-          />
-      </div>
-      <div>
-        <label className="block mb-1 font-semibold">發票或證明上傳：</label>
-        <input
-          type="file"
-          accept="image/*"
-          className="w-full"
-          onChange={(e) => setReimbursementReceipt(e.target.files[0])}
-          required
-          />
-      </div>
-      <button
-        type="submit"
-        className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
-        >
-        送出款項
-      </button>
-    </form>
-    {status && <p className="mt-4 text-sm">{status}</p>}
-  </div>
-  )}
+      {/* Reimbursement */}
+      {activeTab === TAB_REIMBURSEMENT && (
+        <div id="createReimbursement" className="tab-content active">
+          <h1 className="text-3xl font-bold mb-6">新增報帳</h1>
+          <Form onSubmit={handleReimbursementSubmit}>
+            <InputField
+              label="品項"
+              type="text"
+              name="title"
+              value={reimbursementForm.title}
+              onChange={handleChange(setReimbursementForm)}
+            />
+            <InputField
+              label="報帳金額"
+              type="number"
+              name="amount"
+              value={reimbursementForm.amount}
+              onChange={handleChange(setReimbursementForm)}
+            />
+            <div className="form-group">
+              <label className="form-label">備註</label>
+              <textarea
+                name="description"
+                className="form-input"
+                value={reimbursementForm.description}
+                onChange={handleChange(setReimbursementForm)}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">發票或證明上傳</label>
+              <input
+                type="file"
+                accept="image/*"
+                name="receipt"
+                className="form-input"
+                onChange={handleChange(setReimbursementForm)}
+                required
+              />
+            </div>
+            <SubmitButton text="送出款項" />
+          </Form>
+          {status && <p className="mt-4 text-sm">{status}</p>}
+        </div>
+      )}
 
-  {/* Tab of creating new budget */}
-  {activeTab === TAB_BUDGET && (
-  <div id="createBudget" class="tab-content">
-    <h1 className="text-3xl font-bold mb-6">新增申請經費</h1>
-    <form onSubmit={handleBudgetSubmit} className="space-y-4" encType="multipart/form-data">
-      <div>
-        <label className="block mb-1 font-semibold">品項：</label>
-        <input
-          type="text"
-          className="w-full border px-3 py-2 rounded"
-          value={budgetTitle}
-          onChange={(e) => setBudgetTitle(e.target.value)}
-          required
-          />
-      </div>
-      <div>
-        <label className="block mb-1 font-semibold">申請金額：</label>
-        <input
-          type="number"
-          className="w-full border px-3 py-2 rounded"
-          value={budgetAmount}
-          onChange={(e) => setBudgetAmount(e.target.value)}
-          required
-          />
-      </div>
-      <div>
-        <label className="block mb-1 font-semibold">備註：</label>
-        <textarea
-          className="w-full border px-3 py-2 rounded"
-          value={budgetDescription}
-          onChange={(e) => setBudgetDescription(e.target.value)}
-          />
-      </div>
-      <button
-        type="submit"
-        className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
-        >
-        送出款項
-      </button>
-    </form>
-    {status && <p className="mt-4 text-sm">{status}</p>}
-  </div>
-  )}
-  </>
-  )
+      {/* Budget */}
+      {activeTab === TAB_BUDGET && (
+        <div id="createBudget" className="tab-content">
+          <h1 className="text-3xl font-bold mb-6">新增申請經費</h1>
+          <Form onSubmit={handleBudgetSubmit}>
+            <InputField
+              label="品項"
+              type="text"
+              name="title"
+              value={budgetForm.title}
+              onChange={handleChange(setBudgetForm)}
+            />
+            <InputField
+              label="申請金額"
+              type="number"
+              name="amount"
+              value={budgetForm.amount}
+              onChange={handleChange(setBudgetForm)}
+            />
+            <div className="form-group">
+              <label className="form-label">備註</label>
+              <textarea
+                name="description"
+                className="form-input"
+                value={budgetForm.description}
+                onChange={handleChange(setBudgetForm)}
+              />
+            </div>
+            <SubmitButton text="送出款項" />
+          </Form>
+          {status && <p className="mt-4 text-sm">{status}</p>}
+        </div>
+      )}
+    </>
+  );
 }
 
 export default UserCreateRequest;

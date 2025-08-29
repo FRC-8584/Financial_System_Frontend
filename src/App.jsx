@@ -16,6 +16,9 @@ import ManagerRequestRecord from "./pages/manager/ManagerRequestRecord.jsx"
 import ManagerPendingRequest from "./pages/manager/ManagerPendingRequest.jsx"
 import ManagerDealingRequest from "./pages/manager/ManagerDealingRequest.jsx"
 
+import AdminUsersProfile from "./pages/admin/AdminUsersProfile.jsx";
+import AdminRegisterAccount from "./pages/admin/AdminRegisterAccount.jsx";
+
 function App() {
   return (
     <Routes>
@@ -41,8 +44,9 @@ function App() {
 
       {/* Admin Dashboard */}
       <Route path="/admin-dashboard" element={<AdminDashboard />}>
-        {/* <Route path="users" element={<AdminUsers />} />
-        <Route path="settings" element={<AdminSettings />} /> */}
+        <Route index element={<AdminUsersProfile />} />
+        <Route path="usersProfile" element={<AdminUsersProfile />} />
+        <Route path="register" element={<AdminRegisterAccount />} />
       </Route>
     </Routes>
   );
