@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs";
 import { DataTable } from "../../components/DataTable";
 import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
-import { handleVerify, handleSettle } from "../../utils/handleRequestStatus.util";
+import { handleSettle } from "../../utils/handleRequestStatus.util";
 
 // Server API routes
 const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
@@ -11,15 +12,14 @@ const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
 
-export function PendingingRequestPage({ token }) {
+function ManagerDealingRequest() {
+  const { token } = useOutletContext();
   const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
+  const [status, setStatus] = useState("");
 
   // Data of request payments
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
-
-  // Status
-  const [status, setStatus] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -27,8 +27,8 @@ export function PendingingRequestPage({ token }) {
   
   const fetchData = async () => {
     try {
-      await fetchBudgets({ setBudgets, token }, false, "?status=pending");
-      await fetchReimbursements({ setReimbursements, token }, false, "?status=pending");
+      await fetchBudgets({ setBudgets, token }, false, "?status=approved");
+      await fetchReimbursements({ setReimbursements, token }, false, "?status=approved");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -49,7 +49,7 @@ export function PendingingRequestPage({ token }) {
   {/* Tab of my dealing reimbursement */}
   {activeTab === TAB_REIMBURSEMENT && (
   <div>
-    <h1 className="text-3xl font-bold mb-6">待審核報帳款項</h1>
+    <h1 className="text-3xl font-bold mb-6">處理中報帳款項</h1>
     <DataTable
       data={reimbursements}
       columns={[
@@ -63,24 +63,14 @@ export function PendingingRequestPage({ token }) {
           </a>
         ) },
         { key: "", label: "", render: (rec) => (
-          <>
-          <button className="px-4 py-2 mx-3 bg-green-500 text-white rounded hover:bg-green-600"
-            onClick={() => {
-              handleVerify(REIMBURSEMENT_API_ROUTE, rec.id, 'approved', token);
-              fetchData();
-            }}
-          >
-            審核通過
-          </button>
           <button className="px-4 py-2 mx-3 bg-red-500 text-white rounded hover:bg-red-600"
             onClick={() => {
-              handleVerify(REIMBURSEMENT_API_ROUTE, rec.id, 'rejected', token);
+              handleSettle(REIMBURSEMENT_API_ROUTE, rec.id, token);
               fetchData();
             }}
           >
-            審核不通過
+            標記結清
           </button>
-          </>
         ) },
       ]}
       emptyMessage="尚無紀錄"
@@ -91,7 +81,7 @@ export function PendingingRequestPage({ token }) {
   {/* Tab of my dealing budget */}
   {activeTab === TAB_BUDGET && (
   <div>
-    <h1 className="text-3xl font-bold mb-6">待審核申請經費款項</h1>
+    <h1 className="text-3xl font-bold mb-6">處理中申請經費款項</h1>
       <DataTable
       data={budgets}
       columns={[
@@ -99,26 +89,15 @@ export function PendingingRequestPage({ token }) {
         { key: "amount", label: "金額" },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-        { key: "", label: "" },
         { key: "", label: "", render: (rec) => (
-          <>
-          <button className="px-4 py-2 mx-3 bg-green-500 text-white rounded hover:bg-green-600"
-            onClick={() => {
-              handleVerify(BUDGET_API_ROUTE, rec.id, 'approved', token);
-              fetchData();
-            }}
-          >
-            審核通過
-          </button>
           <button className="px-4 py-2 mx-3 bg-red-500 text-white rounded hover:bg-red-600"
             onClick={() => {
-              handleVerify(BUDGET_API_ROUTE, rec.id, 'rejected', token);
+              handleSettle(BUDGET_API_ROUTE, rec.id, token);
               fetchData();
             }}
           >
-            審核不通過
+            標記結清
           </button>
-          </>
         ) },
       ]}
       emptyMessage="尚無紀錄"
@@ -128,3 +107,5 @@ export function PendingingRequestPage({ token }) {
   </>
   )
 }
+
+export default ManagerDealingRequest;

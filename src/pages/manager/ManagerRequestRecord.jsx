@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs";
 import { DataTable } from "../../components/DataTable";
 import { fetchBudgets, fetchReimbursements, fetchDisbursements } from "../../utils/fetchRequestData.util";
 
+const TAB_DISBURSEMENT = "disbursement";
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
-const TAB_DISBURSEMENT = "disbursement";
 
-export function RequestRecordPage({ token }) {
+function ManagerRequestRecord() {
+  const { token } = useOutletContext();
   const [activeTab, setActiveTab] = useState(TAB_DISBURSEMENT);
+  const [status, setStatus] = useState("");
 
   // Data of request payments
   const [budgets, setBudgets] = useState([]);
   const [reimbursements, setReimbursements] = useState([]);
   const [disbursements, setDisbursements] = useState([]);
-
-  // Status
-  const [status, setStatus] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -61,3 +61,5 @@ export function RequestRecordPage({ token }) {
   </>
   )
 }
+
+export default ManagerRequestRecord;

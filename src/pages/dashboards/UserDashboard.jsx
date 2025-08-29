@@ -20,7 +20,7 @@ function UserDashboard() {
   }, [token, navigate]);
 
   return (
-    <Layout title="FRC8584 財務系統" links={links}>
+    <Layout dashboardName="用戶端" links={links}>
       <Outlet context={{ token }} /> {/* Children routes */}
     </Layout>
   );

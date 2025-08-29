@@ -12,6 +12,10 @@ import UserCreateRequest from "./pages/user/UserCreateRequest.jsx"
 import UserPendingRequest from "./pages/user/UserPendingRequest.jsx"
 import UserDealingRequest from "./pages/user/UserDealingRequest.jsx"
 
+import ManagerRequestRecord from "./pages/manager/ManagerRequestRecord.jsx"
+import ManagerPendingRequest from "./pages/manager/ManagerPendingRequest.jsx"
+import ManagerDealingRequest from "./pages/manager/ManagerDealingRequest.jsx"
+
 function App() {
   return (
     <Routes>
@@ -29,9 +33,10 @@ function App() {
 
       {/* Manager Dashboard */}
       <Route path="/manager-dashboard" element={<ManagerDashboard />}>
-        {/* <Route path="requestRecord" element={<ManagerRequestRecord />} />
+        <Route index element={<ManagerRequestRecord />} />
+        <Route path="requestRecord" element={<ManagerRequestRecord />} />
         <Route path="pendingRequest" element={<ManagerPendingRequest />} />
-        <Route path="dealingRequest" element={<ManagerDealingRequest />} /> */}
+        <Route path="dealingRequest" element={<ManagerDealingRequest />} />
       </Route>
 
       {/* Admin Dashboard */}

@@ -66,9 +66,49 @@
 }
 
 .header h1 {
+  display: flex;
   font-size: 24px;
   font-weight: bold;
   margin: 0;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
+.user-profile {
+  display: flex;
+  width: auto;
+  height: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(43, 49, 61);
+  border-radius: 6px;
+  margin: 10px;
+}
+
+.user-profile:hover {
+  background-color: rgb(60, 68, 82);
+}
+
+.logout-button {
+  display: flex;
+  width: auto;
+  height: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(43, 49, 61);
+  border-radius: 6px;
+  margin: 10px;
+}
+
+.logout-button:hover {
+  background-color: rgb(60, 68, 82);
 }
 
 /* === Content === */

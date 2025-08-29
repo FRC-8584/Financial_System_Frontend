@@ -4,15 +4,13 @@ import Header from "./Header.jsx";
 import "../../styles/layout.css";
 import { LogoutConfirm } from "../LogoutConfirm.jsx";
 
-export default function Layout({ title, links, children }) {
+export default function Layout({ dashboardName, links, children }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   return (
     <div className="layout">
-      {/* Header 固定於頂部 */}
-      <Header title={title} showLogout={() => setShowLogoutConfirm(true)} />
+      <Header dashboardName={dashboardName} showLogout={() => setShowLogoutConfirm(true)} />
 
-      {/* Sidebar 與主內容 */}
       <div className="layout-body">
         <Sidebar links={links} />
         <main className="content-body">{children}</main>

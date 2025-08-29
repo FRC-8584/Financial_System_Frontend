@@ -1,18 +1,17 @@
 import React from "react";
 import "../../styles/layout.css";
 
-export default function Header({ title, showLogout }) {
+export default function Header({ dashboardName, showLogout }) {
   return (
     <header className="header">
-      <div className="header-left">
-        <h1>{title}</h1>
-      </div>
-      <div className="header-right">
-        <div className="user-info">用戶</div>
+      <h1>FRC8584 財務系統</h1>
+      <div class="user-actions">
+        <div className="user-profile">關於我...</div>
         <button className="logout-button" onClick={showLogout}>
           登出
         </button>
       </div>
+      
     </header>
   );
 }
