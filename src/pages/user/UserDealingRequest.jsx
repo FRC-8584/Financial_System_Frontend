@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs";
 import { DataTable } from "../../components/DataTable";
 import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
@@ -6,15 +7,14 @@ import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
 
-export function MyRequestRecordPage({ token }) {
+function UserDealingRequest() {
+  const { token } = useOutletContext();
   const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
+  const [status, setStatus] = useState("");
 
   // Data of request payments
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
-
-  // Status
-  const [status, setStatus] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -22,8 +22,8 @@ export function MyRequestRecordPage({ token }) {
   
   const fetchData = async () => {
     try {
-      await fetchBudgets({ setBudgets, token }, true, "");
-      await fetchReimbursements({ setReimbursements, token }, true, "");
+      await fetchBudgets({ setBudgets, token }, true, "?status=approved");
+      await fetchReimbursements({ setReimbursements, token }, true, "?status=approved");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -41,7 +41,7 @@ export function MyRequestRecordPage({ token }) {
     ]}
   />
 
-  {/* Tab of my pending reimbursement */}
+  {/* Tab of my dealing reimbursement */}
   {activeTab === TAB_REIMBURSEMENT && (
   <div>
     <h1 className="text-3xl font-bold mb-6">我的報帳紀錄</h1>
@@ -50,30 +50,28 @@ export function MyRequestRecordPage({ token }) {
       columns={[
         { key: "title", label: "品項" },
         { key: "amount", label: "金額" },
-        { key: "status", label: "狀態" },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
         { key: "receipt_url", label: "單據", render: (rec) => (
-            <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
-              查看
-            </a>
-          ) },
+          <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
+            查看
+          </a>
+        ) },
       ]}
       emptyMessage="尚無紀錄"
     />
   </div>
   )}
 
-  {/* Tab of my pending budget */}
+  {/* Tab of my dealing budget */}
   {activeTab === TAB_BUDGET && (
   <div>
     <h1 className="text-3xl font-bold mb-6">我的申請經費紀錄</h1>
-    <DataTable
+      <DataTable
       data={budgets}
       columns={[
         { key: "title", label: "品項" },
         { key: "amount", label: "金額" },
-        { key: "status", label: "狀態" },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
       ]}
@@ -84,3 +82,5 @@ export function MyRequestRecordPage({ token }) {
   </>
   )
 }
+
+export default UserDealingRequest;

@@ -1,14 +1,15 @@
 import React from "react";
 import "../../styles/layout.css";
 
-export default function Header({ title, showLogout }) {
+export default function Topbar({ title, showLogout }) {
   return (
-    <header className="header">
-      <div className="header-left">
+    <header className="topbar">
+      <div className="topbar-left">
         <h1>{title}</h1>
       </div>
-      <div className="header-right">
+      <div className="topbar-right">
         <div className="user-info">用戶</div>
+
         <button className="logout-button" onClick={showLogout}>
           登出
         </button>

@@ -7,10 +7,10 @@ import UserDashboard from "./pages/dashboards/UserDashboard.jsx";
 import ManagerDashboard from "./pages/dashboards/ManagerDashboard.jsx";
 import AdminDashboard from "./pages/dashboards/AdminDashboard.jsx";
 
-import UserRequestRecord from "./pages/user/MyRequestRecordPage.jsx"
-import UserCreateRequest from "./pages/user/CreateRequestPage.jsx"
-import UserPendingRequest from "./pages/user/MyPendingRequestPage.jsx"
-import UserDealingRequest from "./pages/user/MyDealingRequestPage.jsx"
+import UserRequestRecord from "./pages/user/UserRequestRecord.jsx"
+import UserCreateRequest from "./pages/user/UserCreateRequest.jsx"
+import UserPendingRequest from "./pages/user/UserPendingRequest.jsx"
+import UserDealingRequest from "./pages/user/UserDealingRequest.jsx"
 
 function App() {
   return (

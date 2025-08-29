@@ -2,18 +2,28 @@
 .layout {
   display: flex;
   height: 100vh;
-  background-color: #f7fafc;
+}
+
+.layout-body {
+  display: flex;
+  flex: 1;
+  margin-top: 80px;
 }
 
 /* === Sidebar === */
 .sidebar {
-  width: 250px;
-  background-color: #0d9488; /* teal-800 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: calc(100vh - 60px);
+  background-color: #111827;
   color: white;
-  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  padding: 1.5rem;
+  overflow-y: auto;
+  z-index: 5;
 }
 
 .sidebar-title {
@@ -34,18 +44,28 @@
   border-radius: 8px;
   text-decoration: none;
   color: white;
-  transition: background 0.2s;
+  /* transition: background 0.2s; */
 }
 
 .sidebar-link:hover {
-  background-color: #134e4a; /* 深一點的 teal */
+  background-color: #25282c;
 }
 
 /* === Header === */
 .header {
-  padding: 16px;
-  background-color: white;
-  border-bottom: 1px solid #e2e8f0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background-color: #1f2937;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  z-index: 10; /* 保證在 sidebar 之上 */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
 .header h1 {
@@ -63,5 +83,14 @@
 
 .content-body {
   flex: 1;
-  padding: 24px;
+  margin-left: 240px;
+  margin-top: 0px;
+  padding: 1.5rem;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.content-body table {
+  width: 100%;
+  table-layout: auto;
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs";
 
 // Server API routes
@@ -8,8 +9,10 @@ const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
 
-export function CreateRequestPage({ token }) {
+function UserCreateRequest() {
+  const { token } = useOutletContext();
   const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
+  const [status, setStatus] = useState("");
 
   // Reimbursement request form
   const [reimbursementTitle, setReimbursementTitle] = useState("");
@@ -21,9 +24,6 @@ export function CreateRequestPage({ token }) {
   const [budgetTitle, setBudgetTitle] = useState("");
   const [budgetAmount, setBudgetAmount] = useState("");
   const [budgetDescription, setBudgetDescription] = useState("");
-
-  // Status
-  const [status, setStatus] = useState("");
 
   // Send reimbursement request
   const handleReimbursementSubmit = async (e) => {
@@ -195,3 +195,5 @@ export function CreateRequestPage({ token }) {
   </>
   )
 }
+
+export default UserCreateRequest;
