@@ -19,6 +19,8 @@ import ManagerDealingRequest from "./pages/manager/ManagerDealingRequest.jsx"
 import AdminUsersProfile from "./pages/admin/AdminUsersProfile.jsx";
 import AdminRegisterAccount from "./pages/admin/AdminRegisterAccount.jsx";
 
+import NotFound from "./pages/NotFound.jsx";
+
 function App() {
   return (
     <Routes>
@@ -48,6 +50,9 @@ function App() {
         <Route path="usersProfile" element={<AdminUsersProfile />} />
         <Route path="register" element={<AdminRegisterAccount />} />
       </Route>
+
+      {/* 404 */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

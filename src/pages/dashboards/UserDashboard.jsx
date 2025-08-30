@@ -20,7 +20,7 @@ function UserDashboard() {
   }, [token, navigate]);
 
   return (
-    <Layout dashboardName="用戶端" links={links}>
+    <Layout dashboard="user-dashboard" links={links}>
       <Outlet context={{ token }} /> {/* Children routes */}
     </Layout>
   );

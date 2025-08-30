@@ -18,7 +18,7 @@ function AdminDashboard() {
   }, [token, navigate]);
 
   return (
-    <Layout dashboardName="管理端" links={links}>
+    <Layout dashboardName="admin-dashboard" links={links}>
       <Outlet context={{ token }} /> {/* Children routes */}
     </Layout>
   );

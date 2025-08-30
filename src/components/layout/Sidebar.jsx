@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import "../../styles/layout.css";
+import "../../styles/layout/sidebar.css";
 
 export default function Sidebar({ links }) {
   return (

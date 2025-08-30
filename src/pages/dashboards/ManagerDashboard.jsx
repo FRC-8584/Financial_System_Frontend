@@ -19,7 +19,7 @@ function ManagerDashboard() {
   }, [token, navigate]);
 
   return (
-    <Layout dashboardName="財務端" links={links}>
+    <Layout dashboardName="mamager-dashboard" links={links}>
       <Outlet context={{ token }} /> {/* Children routes */}
     </Layout>
   );

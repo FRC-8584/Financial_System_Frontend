@@ -25,13 +25,11 @@ function Login() {
       if (!token) throw new Error("後端未回傳 token");
 
       const decoded = jwtDecode(token); // Decode JWT
-      const role = decoded.role;
-
+      const { role } = decoded;
       if (!role) throw new Error("token 中沒有 role");
 
-      // 儲存 token
       localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
+      localStorage.setItem("user", JSON.stringify(decoded));
 
       setStatus("✅ 登入成功，導向中...");
       setTimeout(() => {
