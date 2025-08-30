@@ -90,7 +90,7 @@ function UserCreateRequest() {
       {/* Reimbursement */}
       {activeTab === TAB_REIMBURSEMENT && (
         <div id="createReimbursement" className="tab-content active">
-          <h1 className="text-3xl font-bold mb-6">新增報帳</h1>
+          <h1 className="font-bold mb-6">新增報帳</h1>
           <Form onSubmit={handleReimbursementSubmit}>
             <InputField
               label="品項"
@@ -135,7 +135,7 @@ function UserCreateRequest() {
       {/* Budget */}
       {activeTab === TAB_BUDGET && (
         <div id="createBudget" className="tab-content">
-          <h1 className="text-3xl font-bold mb-6">新增申請經費</h1>
+          <h1 className="font-bold mb-6">新增申請經費</h1>
           <Form onSubmit={handleBudgetSubmit}>
             <InputField
               label="品項"

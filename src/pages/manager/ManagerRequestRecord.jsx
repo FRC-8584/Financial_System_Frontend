@@ -45,7 +45,7 @@ function ManagerRequestRecord() {
 
   {activeTab === TAB_DISBURSEMENT && (
   <div>
-    <h1 className="text-3xl font-bold mb-6">已結清請款紀錄</h1>
+    <h1 className="font-bold mb-6">已結清請款紀錄</h1>
     <DataTable
       data={disbursements}
       columns={[

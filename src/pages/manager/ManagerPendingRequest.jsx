@@ -49,7 +49,7 @@ function ManagerPendingRequest() {
   {/* Tab of my dealing reimbursement */}
   {activeTab === TAB_REIMBURSEMENT && (
   <div>
-    <h1 className="text-3xl font-bold mb-6">待審核報帳款項</h1>
+    <h1 className="font-bold mb-6">待審核報帳款項</h1>
     <DataTable
       data={reimbursements}
       columns={[
@@ -91,7 +91,7 @@ function ManagerPendingRequest() {
   {/* Tab of my dealing budget */}
   {activeTab === TAB_BUDGET && (
   <div>
-    <h1 className="text-3xl font-bold mb-6">待審核申請經費款項</h1>
+    <h1 className="font-bold mb-6">待審核申請經費款項</h1>
       <DataTable
       data={budgets}
       columns={[

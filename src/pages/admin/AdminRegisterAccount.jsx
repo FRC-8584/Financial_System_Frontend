@@ -52,7 +52,7 @@ function AdminRegisterAccount() {
 
   return (
   <div id="register">
-    <h1 className="text-3xl font-bold mb-6">註冊使用者</h1>
+    <h1 className="font-bold mb-6">註冊使用者</h1>
     <Form onSubmit={handleRegisterationSubmit}>
       <InputField
         label="使用者名稱"
