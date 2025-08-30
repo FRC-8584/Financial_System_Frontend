@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs";
 import { DataTable } from "../../components/DataTable";
 import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
+import { convertRequestStatusName } from "../../utils/dataNameConverter.util";
 
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
@@ -58,6 +59,22 @@ function UserPendingRequest() {
               查看
             </a>
           ) },
+        { key: "", label: "", render: (rec) => (
+          <>
+          <button className="px-4 py-2 mx-2 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={() => {
+            }}
+          >
+            修改款項內容
+          </button>
+          <button className="px-4 py-2 mx-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={() => {
+            }}
+          >
+            刪除款項
+          </button>
+          </>
+        ) },
       ]}
       emptyMessage="尚無紀錄"
     />
@@ -76,6 +93,22 @@ function UserPendingRequest() {
         { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+        { key: "", label: "", render: (rec) => (
+          <>
+          <button className="px-4 py-2 mx-2 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={() => {
+            }}
+          >
+            修改款項內容
+          </button>
+          <button className="px-4 py-2 mx-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={() => {
+            }}
+          >
+            刪除款項
+          </button>
+          </>
+        ) },
       ]}
       emptyMessage="尚無紀錄"
     />

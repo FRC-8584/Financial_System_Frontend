@@ -64,7 +64,7 @@ function ManagerPendingRequest() {
         ) },
         { key: "", label: "", render: (rec) => (
           <>
-          <button className="px-4 py-2 mx-3 bg-green-500 text-white rounded hover:bg-green-600"
+          <button className="px-4 py-2 mx-2 bg-green-500 text-white rounded hover:bg-green-600"
             onClick={() => {
               handleVerify(REIMBURSEMENT_API_ROUTE, rec.id, 'approved', token);
               fetchData();
@@ -72,7 +72,7 @@ function ManagerPendingRequest() {
           >
             審核通過
           </button>
-          <button className="px-4 py-2 mx-3 bg-red-500 text-white rounded hover:bg-red-600"
+          <button className="px-4 py-2 mx-2 bg-red-500 text-white rounded hover:bg-red-600"
             onClick={() => {
               handleVerify(REIMBURSEMENT_API_ROUTE, rec.id, 'rejected', token);
               fetchData();
@@ -99,10 +99,9 @@ function ManagerPendingRequest() {
         { key: "amount", label: "金額" },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-        { key: "", label: "" },
         { key: "", label: "", render: (rec) => (
           <>
-          <button className="px-4 py-2 mx-3 bg-green-500 text-white rounded hover:bg-green-600"
+          <button className="px-4 py-2 mx-2 bg-green-500 text-white rounded hover:bg-green-600"
             onClick={() => {
               handleVerify(BUDGET_API_ROUTE, rec.id, 'approved', token);
               fetchData();
@@ -110,7 +109,7 @@ function ManagerPendingRequest() {
           >
             審核通過
           </button>
-          <button className="px-4 py-2 mx-3 bg-red-500 text-white rounded hover:bg-red-600"
+          <button className="px-4 py-2 mx-2 bg-red-500 text-white rounded hover:bg-red-600"
             onClick={() => {
               handleVerify(BUDGET_API_ROUTE, rec.id, 'rejected', token);
               fetchData();

@@ -5,7 +5,7 @@ import Header from "./Header.jsx";
 import "../../styles/layout/layout.css";
 import { LogoutConfirm } from "../LogoutConfirm.jsx";
 
-export default function Layout({ dashboard, links, children }) {
+export default function Layout({ links, children }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [activeDashboard, setActiveDashboard] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
