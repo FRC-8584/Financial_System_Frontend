@@ -4,6 +4,7 @@ import { Tabs } from "../../components/Tabs";
 import { DataTable } from "../../components/DataTable";
 import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
 import { handleVerify, handleSettle } from "../../utils/handleRequestStatus.util";
+import "../../styles/pages/managerPendingRequest.css";
 
 // Server API routes
 const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
@@ -17,7 +18,6 @@ function ManagerPendingRequest() {
   const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
   const [status, setStatus] = useState("");
 
-  // Data of request payments
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
 
@@ -34,98 +34,100 @@ function ManagerPendingRequest() {
     }
   };
 
+  const handleRequestAction = async (rec, actionType) => {
+    const isReimbursement = activeTab === TAB_REIMBURSEMENT;
+    const apiRoute = isReimbursement ? REIMBURSEMENT_API_ROUTE : BUDGET_API_ROUTE;
+    const setRequestData = isReimbursement ? setReimbursements : setBudgets;
+    
+    try {
+      await handleVerify(apiRoute, rec.id, actionType, token);
+      setRequestData(prev => prev.filter(item => item.id !== rec.id));
+      setStatus(`審核${actionType === 'approved' ? '通過' : '不通過'}成功！`);
+    } catch (err) {
+      setStatus("審核失敗：" + err.message);
+    }
+  };
+
   return (
-  <>
-  {/* Tab button */}
-  <Tabs
-    activeTab={activeTab}
-    setActiveTab={setActiveTab}
-    tabs={[
-      { value: TAB_REIMBURSEMENT, label: "報帳" },
-      { value: TAB_BUDGET, label: "申請經費" },
-    ]}
-  />
+    <>
+      <Tabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        tabs={[
+          { value: TAB_REIMBURSEMENT, label: "報帳" },
+          { value: TAB_BUDGET, label: "申請經費" },
+        ]}
+      />
 
-  {/* Tab of my dealing reimbursement */}
-  {activeTab === TAB_REIMBURSEMENT && (
-  <div>
-    <h1 className="font-bold mb-6">待審核報帳款項</h1>
-    <DataTable
-      data={reimbursements}
-      columns={[
-        { key: "title", label: "品項" },
-        { key: "amount", label: "金額" },
-        { key: "description", label: "備註" },
-        { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-        { key: "receipt_url", label: "單據", render: (rec) => (
-          <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
-            查看
-          </a>
-        ) },
-        { key: "", label: "", render: (rec) => (
-          <>
-          <button className="px-4 py-2 mx-2 bg-green-500 text-white rounded hover:bg-green-600"
-            onClick={() => {
-              handleVerify(REIMBURSEMENT_API_ROUTE, rec.id, 'approved', token);
-              fetchData();
-            }}
-          >
-            審核通過
-          </button>
-          <button className="px-4 py-2 mx-2 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={() => {
-              handleVerify(REIMBURSEMENT_API_ROUTE, rec.id, 'rejected', token);
-              fetchData();
-            }}
-          >
-            審核不通過
-          </button>
-          </>
-        ) },
-      ]}
-      emptyMessage="尚無紀錄"
-    />
-  </div>
-  )}
+      {activeTab === TAB_REIMBURSEMENT && (
+        <div className="manager-pending-request-section">
+          <h1 className="request-title">待審核報帳款項</h1>
+          <DataTable
+            data={reimbursements}
+            columns={[
+              { key: "title", label: "品項" },
+              { key: "amount", label: "金額" },
+              { key: "description", label: "備註" },
+              { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+              { key: "receipt_url", label: "單據", render: (rec) => (
+                  <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="receipt-link">查看</a>
+                ) },
+              { key: "", label: "", render: (rec) => (
+                  <>
+                    <button
+                      className="action-button approve-button"
+                      onClick={() => handleRequestAction(rec, 'approved')}
+                    >
+                      審核通過
+                    </button>
+                    <button
+                      className="action-button reject-button"
+                      onClick={() => handleRequestAction(rec, 'rejected')}
+                    >
+                      審核不通過
+                    </button>
+                  </>
+                ) },
+            ]}
+            emptyMessage="尚無紀錄"
+          />
+        </div>
+      )}
 
-  {/* Tab of my dealing budget */}
-  {activeTab === TAB_BUDGET && (
-  <div>
-    <h1 className="font-bold mb-6">待審核申請經費款項</h1>
-      <DataTable
-      data={budgets}
-      columns={[
-        { key: "title", label: "品項" },
-        { key: "amount", label: "金額" },
-        { key: "description", label: "備註" },
-        { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-        { key: "", label: "", render: (rec) => (
-          <>
-          <button className="px-4 py-2 mx-2 bg-green-500 text-white rounded hover:bg-green-600"
-            onClick={() => {
-              handleVerify(BUDGET_API_ROUTE, rec.id, 'approved', token);
-              fetchData();
-            }}
-          >
-            審核通過
-          </button>
-          <button className="px-4 py-2 mx-2 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={() => {
-              handleVerify(BUDGET_API_ROUTE, rec.id, 'rejected', token);
-              fetchData();
-            }}
-          >
-            審核不通過
-          </button>
-          </>
-        ) },
-      ]}
-      emptyMessage="尚無紀錄"
-    />
-  </div>
-  )}
-  </>
-  )
+      {activeTab === TAB_BUDGET && (
+        <div className="manager-pending-request-section">
+          <h1 className="request-title">待審核申請經費款項</h1>
+          <DataTable
+            data={budgets}
+            columns={[
+              { key: "title", label: "品項" },
+              { key: "amount", label: "金額" },
+              { key: "description", label: "備註" },
+              { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+              { key: "", label: "", render: (rec) => (
+                  <>
+                    <button
+                      className="action-button approve-button"
+                      onClick={() => handleRequestAction(rec, 'approved')}
+                    >
+                      審核通過
+                    </button>
+                    <button
+                      className="action-button reject-button"
+                      onClick={() => handleRequestAction(rec, 'rejected')}
+                    >
+                      審核不通過
+                    </button>
+                  </>
+                ) },
+            ]}
+            emptyMessage="尚無紀錄"
+          />
+        </div>
+      )}
+      <div className="status">{status}</div>
+    </>
+  );
 }
 
 export default ManagerPendingRequest;
