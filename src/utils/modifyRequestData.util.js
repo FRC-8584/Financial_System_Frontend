@@ -1,6 +1,27 @@
-export const handleModifyRequestData = async (data, route, id, token) => {
+// Server API routes
+const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
+const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
+const DISBURSEMENT_API_ROUTE = 'http://localhost:3000/api/disbursement';
+
+export const handleModifyReimbursement = async (data, id, token) => {
   try {
-    const res = await fetch(route + `/${id}/`, {
+    const res = await fetch(REIMBURSEMENT_API_ROUTE + `/${id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("操作失敗");
+  } catch (err) {
+    throw err;
+  }
+}
+
+export const handleModifyBudget = async (data, id, token) => {
+  try {
+    const res = await fetch(BUDGET_API_ROUTE + `/${id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { DataTable } from "../../components/DataTable.jsx";
-import { fetchAllUsersProfile } from "../../utils/userDataHandler.util.js";
+import { fetchAllUsersProfile } from "../../utils/userAPI.js";
 import { convertRoleName } from "../../utils/dataNameConverter.util.js";
 
 function AdminUsersProfile() {

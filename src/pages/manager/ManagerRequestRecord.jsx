@@ -58,6 +58,8 @@ function ManagerRequestRecord() {
     />
   </div>
   )}
+
+  <div className="status">{status}</div>
   </>
   )
 }

@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import Form from "../../components/form/Form.jsx";
 import InputField from "../../components/form/InputField.jsx";
 import SubmitButton from "../../components/form/SubmitButton.jsx";
-import { handleRegister } from "../../utils/userDataHandler.util.js";
+import { handleRegister } from "../../utils/userAPI.js";
 
 function AdminRegisterAccount() {
   const { token } = useOutletContext();
