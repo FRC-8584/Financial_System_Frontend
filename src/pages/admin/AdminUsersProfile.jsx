@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { DataTable } from "../../components/DataTable.jsx";
 import { fetchAllUsersProfile } from "../../utils/userDataHandler.util.js";
+import { convertRoleName } from "../../utils/dataNameConverter.util.js";
 
 function AdminUsersProfile() {
   const { token } = useOutletContext();
@@ -30,7 +31,7 @@ function AdminUsersProfile() {
       columns={[
         { key: "name", label: "使用者名稱" },
         { key: "email", label: "電子郵件" },
-        { key: "role", label: "權限" },
+        { key: "role", label: "權限", render: (rec) => convertRoleName(rec.role) },
         { key: "createdAt", label: "帳號建立時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
       ]}
       emptyMessage="尚無紀錄"

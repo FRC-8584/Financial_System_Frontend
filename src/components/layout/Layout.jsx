@@ -13,7 +13,7 @@ export default function Layout({ dashboard, links, children }) {
   const location = useLocation();
 
 useEffect(() => {
-  const currentPath = location.pathname.substring(1); 
+  const currentPath = location.pathname.split('/')[1]; 
 
   if (!user || !user.role) {
     alert("請先登入");

@@ -50,7 +50,7 @@ function UserPendingRequest() {
       columns={[
         { key: "title", label: "品項" },
         { key: "amount", label: "金額" },
-        { key: "status", label: "狀態" },
+        { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
         { key: "receipt_url", label: "單據", render: (rec) => (
@@ -73,7 +73,7 @@ function UserPendingRequest() {
       columns={[
         { key: "title", label: "品項" },
         { key: "amount", label: "金額" },
-        { key: "status", label: "狀態" },
+        { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
       ]}

@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs";
 import { DataTable } from "../../components/DataTable";
 import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
+import { convertRequestStatusName } from "../../utils/dataNameConverter.util";
 
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
@@ -50,7 +51,7 @@ function UserRequestRecord() {
       columns={[
         { key: "title", label: "品項" },
         { key: "amount", label: "金額" },
-        { key: "status", label: "狀態" },
+        { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
         { key: "receipt_url", label: "單據", render: (rec) => (
@@ -73,7 +74,7 @@ function UserRequestRecord() {
       columns={[
         { key: "title", label: "品項" },
         { key: "amount", label: "金額" },
-        { key: "status", label: "狀態" },
+        { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
         { key: "description", label: "備註" },
         { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
       ]}
