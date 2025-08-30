@@ -1,0 +1,43 @@
+.request-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.request-section {
+  padding: 16px;
+}
+
+/* Settle Button */
+.settle-button {
+  padding: 8px 16px;
+  margin-left: 12px;
+  margin-right: 12px;
+  background-color: rgb(33, 94, 173);
+  color: white;
+  border-radius: 6px;
+  transition: rgb(33, 94, 173) 0.3s ease;
+}
+.settle-button:hover {
+  background-color: rgb(22, 102, 206);
+}
+
+/* Export Button */
+.export-button {
+  padding: 8px 16px;
+  margin-left: 12px;
+  margin-right: 12px;
+  background-color: rgb(33, 94, 173);
+  color: white;
+  border-radius: 6px;
+  transition: rgb(33, 94, 173) 0.3s ease;
+}
+.export-button:hover {
+  background-color: rgb(22, 102, 206);
+}
+
+/* Receipt Link */
+.receipt-link {
+  color: black;
+  text-decoration: underline;
+}

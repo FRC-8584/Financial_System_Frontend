@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Tabs } from "../../components/Tabs";
-import { DataTable } from "../../components/DataTable";
-import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
-import { handleSettle } from "../../utils/handleRequestStatus.util";
+import { Tabs } from "../../components/Tabs.jsx";
+import { DataTable } from "../../components/DataTable.jsx";
+import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util.js";
+import { handleSettle } from "../../utils/handleRequestStatus.util.js";
+import { fetchReimbursementRequest } from "../../utils/exportExcel.util.js";
+import "../../styles/pages/managerDealingRequest.css";
 
 // Server API routes
 const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
@@ -21,91 +23,117 @@ function ManagerDealingRequest() {
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
 
-  useEffect(() => {
-    fetchData();
-  }, [token]);
-  
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       await fetchBudgets({ setBudgets, token }, false, "?status=approved");
       await fetchReimbursements({ setReimbursements, token }, false, "?status=approved");
+      setStatus("");
+    } catch (err) {
+      setStatus("錯誤：" + err.message);
+    }
+  }, [token]);
+  
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleSettleAndRemove = async (apiRoute, id) => {
+    try {
+      await handleSettle(apiRoute, id, token);
+      if (apiRoute === REIMBURSEMENT_API_ROUTE) {
+        setReimbursements(prev => prev.filter(item => item.id !== id));
+      } else if (apiRoute === BUDGET_API_ROUTE) {
+        setBudgets(prev => prev.filter(item => item.id !== id));
+      }
+      setStatus("結清成功！");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
   };
 
   return (
-  <>
-  {/* Tab button */}
-  <Tabs
-    activeTab={activeTab}
-    setActiveTab={setActiveTab}
-    tabs={[
-      { value: TAB_REIMBURSEMENT, label: "報帳" },
-      { value: TAB_BUDGET, label: "申請經費" },
-    ]}
-  />
+    <>
+      <Tabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        tabs={[
+          { value: TAB_REIMBURSEMENT, label: "報帳" },
+          { value: TAB_BUDGET, label: "申請經費" },
+        ]}
+      />
 
-  {/* Tab of my dealing reimbursement */}
-  {activeTab === TAB_REIMBURSEMENT && (
-  <div>
-    <h1 className="text-3xl font-bold mb-6">處理中報帳款項</h1>
-    <DataTable
-      data={reimbursements}
-      columns={[
-        { key: "title", label: "品項" },
-        { key: "amount", label: "金額" },
-        { key: "description", label: "備註" },
-        { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-        { key: "receipt_url", label: "單據", render: (rec) => (
-          <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
-            查看
-          </a>
-        ) },
-        { key: "", label: "", render: (rec) => (
-          <button className="px-4 py-2 mx-3 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={() => {
-              handleSettle(REIMBURSEMENT_API_ROUTE, rec.id, token);
-              fetchData();
-            }}
-          >
-            標記結清
-          </button>
-        ) },
-      ]}
-      emptyMessage="尚無紀錄"
-    />
-  </div>
-  )}
+      {activeTab === TAB_REIMBURSEMENT && (
+        <div className="request-section">
+          <h1 className="request-title">處理中報帳款項</h1>
+          <DataTable
+            data={reimbursements}
+            columns={[
+              { key: "title", label: "品項" },
+              { key: "amount", label: "金額" },
+              { key: "description", label: "備註" },
+              { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+              { key: "receipt_url", label: "單據", render: (rec) => (
+                <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="receipt-link">
+                  查看
+                </a>
+              ) },
+              { key: "", label: "", render: (rec) => (
+                <button className="settle-button"
+                  onClick={() => {
+                    handleSettleAndRemove(REIMBURSEMENT_API_ROUTE, rec.id);
+                  }}
+                >
+                  標記結清
+                </button>
+              ) },
+            ]}
+            emptyMessage="尚無紀錄"
+          />
+          {reimbursements.length > 0 && (<div>
+            <button className="export-button" onClick={async () => {
+              try {
+                setStatus("正在生成請款單...");
+                await fetchReimbursementRequest({ token });
+                setStatus("請款單已成功下載！");
+              } catch (err) {
+                setStatus("錯誤：" + err.message);
+              }
+              }}
+            >
+              輸出請款單
+            </button>
+          </div>)}
+        </div>
+      )}
 
-  {/* Tab of my dealing budget */}
-  {activeTab === TAB_BUDGET && (
-  <div>
-    <h1 className="text-3xl font-bold mb-6">處理中申請經費款項</h1>
-      <DataTable
-      data={budgets}
-      columns={[
-        { key: "title", label: "品項" },
-        { key: "amount", label: "金額" },
-        { key: "description", label: "備註" },
-        { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-        { key: "", label: "", render: (rec) => (
-          <button className="px-4 py-2 mx-3 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={() => {
-              handleSettle(BUDGET_API_ROUTE, rec.id, token);
-              fetchData();
-            }}
-          >
-            標記結清
-          </button>
-        ) },
-      ]}
-      emptyMessage="尚無紀錄"
-    />
-  </div>
-  )}
-  </>
-  )
+      {activeTab === TAB_BUDGET && (
+        <div className="request-section">
+          <h1 className="request-title">處理中申請經費款項</h1>
+          <DataTable
+            data={budgets}
+            columns={[
+              { key: "title", label: "品項" },
+              { key: "amount", label: "金額" },
+              { key: "description", label: "備註" },
+              { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+              { key: "", label: "", render: (rec) => (
+                <button className="settle-button"
+                  onClick={() => {
+                    handleSettleAndRemove(BUDGET_API_ROUTE, rec.id);
+                  }}
+                >
+                  標記結清
+                </button>
+              ) },
+            ]}
+            emptyMessage="尚無紀錄"
+          />
+        </div>
+      )}
+
+      <div className="status">{status}</div>
+    </>
+  );
 }
 
 export default ManagerDealingRequest;
