@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import Form from "../../components/form/Form.jsx";
 import InputField from "../../components/form/InputField.jsx";
 import SubmitButton from "../../components/form/SubmitButton.jsx";
-import { handleRegister } from "../../utils/userAPI.js";
+import { handleRegister } from "../../utils/handleUserData.js";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 
 function AdminRegisterAccount() {

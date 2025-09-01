@@ -4,7 +4,7 @@ const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
 const DISBURSEMENT_API_ROUTE = 'http://localhost:3000/api/disbursement';
 
 // Get reimbursement records
-export const fetchReimbursements = async ({ setReimbursements, token }, isMy, param='') => {
+export const fetchReimbursements = async ({ setReimbursements, param = '', token }, isMy = false) => {
   try {
     const res = await fetch(REIMBURSEMENT_API_ROUTE + (isMy ? '/me' : '/') + param.trim(), {
       method: 'GET',
@@ -18,7 +18,7 @@ export const fetchReimbursements = async ({ setReimbursements, token }, isMy, pa
 };
 
 // Get budget records
-export const fetchBudgets = async ({ setBudgets, token }, isMy, param='') => {
+export const fetchBudgets = async ({ setBudgets, param = '', token }, isMy = false) => {
   try {
     const res = await fetch(BUDGET_API_ROUTE + (isMy ? '/me' : '/') + param.trim(), {
       method: 'GET',
@@ -32,7 +32,7 @@ export const fetchBudgets = async ({ setBudgets, token }, isMy, param='') => {
 };
 
 // Get disbursement records
-export const fetchDisbursements = async ({ setDisbursements, token }, param = "") => {
+export const fetchDisbursements = async ({ setDisbursements, param = '', token }) => {
   try {
     const res = await fetch(DISBURSEMENT_API_ROUTE + '/' + param.trim(), {
       method: "GET",

@@ -5,7 +5,7 @@ import { Tabs } from "../../components/Tabs.jsx";
 import Form from "../../components/form/Form.jsx";
 import InputField from "../../components/form/InputField.jsx";
 import SubmitButton from "../../components/form/SubmitButton.jsx";
-import { submitReimbursement, submitBudget } from "../../utils/formHandler.util.js";
+import { submitReimbursement, submitBudget } from "../../utils/handleCreateRequest.js";
 
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";

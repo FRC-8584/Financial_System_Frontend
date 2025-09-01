@@ -3,9 +3,9 @@ import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs.jsx";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx"
 import { DataTable } from "../../components/DataTable.jsx";
-import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util.js";
-import { handleSettle } from "../../utils/handleRequestStatus.util.js";
-import { fetchReimbursementRequest } from "../../utils/exportExcel.util.js";
+import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
+import { handleSettle } from "../../utils/handleSetRequestStatus.js";
+import { fetchReimbursementRequest } from "../../utils/handleExportExcel.js";
 import "../../styles/pages/managerDealingRequest.css";
 
 // Server API routes
@@ -61,8 +61,8 @@ function ManagerDealingRequest() {
 
   const fetchData = useCallback(async () => {
     try {
-      await fetchBudgets({ setBudgets, token }, false, "?status=approved");
-      await fetchReimbursements({ setReimbursements, token }, false, "?status=approved");
+      await fetchBudgets({ setBudgets, token, param: "?status=approved" });
+      await fetchReimbursements({ setReimbursements, token, param: "?status=approved" });
       setStatus("");
     } catch (err) {
       setStatus("錯誤：" + err.message);

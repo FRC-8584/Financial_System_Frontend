@@ -2,12 +2,12 @@
 const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
 const REIMBURSEMENT_API_ROUTE = 'http://localhost:3000/api/reimbursement';
 
-export const submitReimbursement = async (token, formData) => {
+export const submitReimbursement = async (token, data) => {
   try {
     const res = await fetch(REIMBURSEMENT_API_ROUTE + '/', {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
-      body: formData,
+      body: data,
     });
 
     if (!res.ok) throw new Error("報帳送出失敗");

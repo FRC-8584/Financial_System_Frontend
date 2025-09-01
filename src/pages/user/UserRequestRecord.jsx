@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { Tabs } from "../../components/Tabs.jsx";
 import { DataTable } from "../../components/DataTable.jsx";
-import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util.js";
+import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
 import { convertRequestStatusName } from "../../utils/dataNameConverter.util.js";
 
 const TAB_REIMBURSEMENT = "reimbursement";
@@ -45,8 +45,8 @@ function UserRequestRecord() {
   
   const fetchData = async () => {
     try {
-      await fetchBudgets({ setBudgets, token }, true, "");
-      await fetchReimbursements({ setReimbursements, token }, true, "");
+      await fetchBudgets({ setBudgets, token }, true);
+      await fetchReimbursements({ setReimbursements, token }, true);
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }

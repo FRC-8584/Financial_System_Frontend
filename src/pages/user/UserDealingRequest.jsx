@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs";
 import { DataTable } from "../../components/DataTable.jsx";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
-import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
+import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
 
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
@@ -42,8 +42,8 @@ function UserDealingRequest() {
   
   const fetchData = async () => {
     try {
-      await fetchBudgets({ setBudgets, token }, true, "?status=approved");
-      await fetchReimbursements({ setReimbursements, token }, true, "?status=approved");
+      await fetchBudgets({ setBudgets, token, param: "?status=approved" }, true);
+      await fetchReimbursements({ setReimbursements, token, param: "?status=approved" }, true);
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }

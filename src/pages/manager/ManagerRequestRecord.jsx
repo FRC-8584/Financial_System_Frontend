@@ -3,7 +3,8 @@ import { useOutletContext } from "react-router-dom";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { Tabs } from "../../components/Tabs.jsx";
 import { DataTable } from "../../components/DataTable.jsx";
-import { fetchBudgets, fetchReimbursements, fetchDisbursements } from "../../utils/fetchRequestData.util.js";
+import { fetchBudgets, fetchReimbursements, fetchDisbursements } from "../../utils/handleFetchRequest.js";
+import { convertRequestStatusName } from "../../utils/dataNameConverter.util.js"
 
 const TAB_DISBURSEMENT = "disbursement";
 const TAB_REIMBURSEMENT = "reimbursement";
@@ -27,13 +28,38 @@ function ManagerRequestRecord() {
     { key: "settledAt", label: "結清時間", render: (rec) => new Date(rec.settledAt).toLocaleString() }
   ]
 
+  const reimbursement_column = [
+    { key: "user", label: "報帳人", render: (rec) => rec.user.name },
+    { key: "title", label: "品項" },
+    { key: "amount", label: "金額" },
+    { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
+    { key: "description", label: "備註" },
+    { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+    { key: "receipt_url", label: "收據或發票證明", render: (rec) => (
+      <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
+        查看
+      </a>
+    ) }
+  ]
+
+  const budget_column = [
+    { key: "user", label: "報帳人", render: (rec) => rec.user.name },
+    { key: "title", label: "品項" },
+    { key: "amount", label: "金額" },
+    { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
+    { key: "description", label: "備註" },
+    { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+  ]
+
   useEffect(() => {
     fetchData();
   }, [token]);
   
   const fetchData = async () => {
     try {
-      await fetchDisbursements({ setDisbursements, token }, "");
+      await fetchDisbursements({ setDisbursements, token });
+      await fetchReimbursements({ setReimbursements, token });
+      await fetchBudgets({ setBudgets, token });
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -59,6 +85,26 @@ function ManagerRequestRecord() {
       emptyMessage="尚無紀錄"
     />
   </PageLayout>
+  )}
+
+  {activeTab === TAB_REIMBURSEMENT && (
+    <PageLayout title={"報帳款項紀錄 (全)"}>
+      <DataTable
+        data={reimbursements}
+        columns={reimbursement_column}
+        emptyMessage="尚無紀錄"
+      />
+    </PageLayout>
+  )}
+
+  {activeTab === TAB_BUDGET && (
+    <PageLayout title={"申請經費款項紀錄 (全)"}>
+      <DataTable
+        data={budgets}
+        columns={budget_column}
+        emptyMessage="尚無紀錄"
+      />
+    </PageLayout>
   )}
 
   <div className="status">{status}</div>

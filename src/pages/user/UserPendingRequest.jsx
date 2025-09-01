@@ -5,9 +5,9 @@ import { Tabs } from "../../components/Tabs.jsx";
 import { DataTable } from "../../components/DataTable.jsx";
 import { DeleteConfirm } from "../../components/DeleteConfirm.jsx";
 import { ModifyDialog } from "../../components/ModifyDialog.jsx";
-import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util.js";
-import { handleModifyBudget, handleModifyReimbursement } from "../../utils/modifyRequestData.util.js";
-import { handleDeleteBudget, handleDeleteReimbursement } from "../../utils/deleteRequestData.util.js";
+import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
+import { handleModifyBudget, handleModifyReimbursement } from "../../utils/handleModifyRequest.js";
+import { handleDeleteBudget, handleDeleteReimbursement } from "../../utils/handleDeleteRequest.js";
 import { convertRequestStatusName } from "../../utils/dataNameConverter.util.js";
 import "../../styles/pages/userPendingRequest.css";
 
@@ -85,8 +85,8 @@ function UserPendingRequest() {
   
   const fetchData = async () => {
     try {
-      await fetchBudgets({ setBudgets, token }, true, "?status=pending");
-      await fetchReimbursements({ setReimbursements, token }, true, "?status=pending");
+      await fetchBudgets({ setBudgets, token, param: "?status=pending" }, true);
+      await fetchReimbursements({ setReimbursements, token, param: "?status=pending" }, true);
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
