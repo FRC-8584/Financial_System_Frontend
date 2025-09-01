@@ -4,6 +4,7 @@ import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { Tabs } from "../../components/Tabs.jsx";
 import { DataTable } from "../../components/DataTable.jsx";
 import { fetchBudgets, fetchReimbursements, fetchDisbursements } from "../../utils/handleFetchRequest.js";
+import { fetchRequestRecordExcel } from "../../utils/handleExportExcel.js";
 import { convertRequestStatusName } from "../../utils/dataNameConverter.util.js"
 
 const TAB_DISBURSEMENT = "disbursement";
@@ -65,6 +66,16 @@ function ManagerRequestRecord() {
     }
   };
 
+  const handleDownloadExcel = async () => {
+    try {
+      setStatus("正在生成請款紀錄表...");
+      await fetchRequestRecordExcel({ token });
+      setStatus("請款紀錄表已成功下載！");
+    } catch (err) {
+      setStatus("錯誤：" + err.message);
+    }
+  }
+
   return (
   <>
   <Tabs
@@ -84,6 +95,16 @@ function ManagerRequestRecord() {
       columns={disbursement_column}
       emptyMessage="尚無紀錄"
     />
+    {disbursements.length > 0 && (
+    <div>
+      <button 
+        className="export-button"
+        onClick={handleDownloadExcel}
+      >
+        輸出請款紀錄表
+      </button>
+    </div>
+    )}
   </PageLayout>
   )}
 

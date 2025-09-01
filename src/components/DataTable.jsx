@@ -1,22 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import "../styles/dataTable.css";
 
 export function DataTable({ data, columns, emptyMessage }) {
   return (
-    <table className="w-full border-collapse">
+    <table className="data-table">
       {data.length > 0 ? (
         <>
           <thead>
-            <tr className="bg-gray-200 text-left">
+            <tr className="table-header-row">
               {columns.map((col) => (
-                <th key={col.key} className="p-3">{col.label}</th>
+                <th key={col.key} className="table-header-cell">
+                  {col.label}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {data.map((rec) => (
-              <tr key={rec.id} className="border-b">
+              <tr key={rec.id} className="table-body-row">
                 {columns.map((col) => (
-                  <td key={col.key} className="p-3">
+                  <td key={col.key} className="table-body-cell">
                     {col.render ? col.render(rec) : rec[col.key]}
                   </td>
                 ))}
@@ -27,7 +30,7 @@ export function DataTable({ data, columns, emptyMessage }) {
       ) : (
         <tbody>
           <tr>
-            <td className="p-3 text-center" colSpan={columns.length}>
+            <td className="table-empty-message" colSpan={columns.length}>
               {emptyMessage}
             </td>
           </tr>

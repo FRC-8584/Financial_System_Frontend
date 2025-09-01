@@ -1,0 +1,27 @@
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 30px 20px 5px;
+}
+
+.table-header-row {
+  background-color: #e5e7eb;
+  text-align: left;
+}
+
+.table-header-cell {
+  padding: 12px;
+}
+
+.table-body-row {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-body-cell {
+  padding: 12px;
+}
+
+.table-empty-message {
+  padding: 12px;
+  text-align: center;
+}
