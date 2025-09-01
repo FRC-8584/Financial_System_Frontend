@@ -55,7 +55,6 @@ useEffect(() => {
         onDashboardChange={handleDashboardChange}
         showLogout={() => setShowLogoutConfirm(true)}
       />
-
       <div className="layout-body">
         <Sidebar links={links} />
         <main className="content-body">{children}</main>

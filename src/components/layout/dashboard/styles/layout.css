@@ -6,8 +6,10 @@
 }
 
 .layout-body {
+  position: relative;
   display: flex;
   flex: 1;
+  overflow-y: auto;
 }
 
 .layout-main {

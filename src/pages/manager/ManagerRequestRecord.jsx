@@ -78,7 +78,7 @@ function ManagerRequestRecord() {
   />
 
   {activeTab === TAB_DISBURSEMENT && (
-  <PageLayout title={"已結清請款紀錄"}>
+  <PageLayout title={"歷史請款紀錄 (已結清報帳)"}>
     <DataTable
       data={disbursements}
       columns={disbursement_column}
