@@ -4,6 +4,7 @@ import Form from "../../components/form/Form.jsx";
 import InputField from "../../components/form/InputField.jsx";
 import SubmitButton from "../../components/form/SubmitButton.jsx";
 import { handleRegister } from "../../utils/userAPI.js";
+import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 
 function AdminRegisterAccount() {
   const { token } = useOutletContext();
@@ -15,7 +16,6 @@ function AdminRegisterAccount() {
     password: "",
     role: "member",
   });
-
 
   const handleChange = (setter) => (e) => {
     const { name, value, files } = e.target;
@@ -51,8 +51,7 @@ function AdminRegisterAccount() {
   };
 
   return (
-  <div id="register">
-    <h1 className="font-bold mb-6">註冊使用者</h1>
+  <PageLayout title={"註冊使用者"}>
     <Form onSubmit={handleRegisterationSubmit}>
       <InputField
         label="使用者名稱"
@@ -89,7 +88,7 @@ function AdminRegisterAccount() {
       <SubmitButton text="註冊用戶" />
     </Form>
     {status && <p className="mt-4 text-sm">{status}</p>}
-  </div>
+  </PageLayout>
   );
 }
 

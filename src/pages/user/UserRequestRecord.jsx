@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Tabs } from "../../components/Tabs";
-import { DataTable } from "../../components/DataTable";
-import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
-import { convertRequestStatusName } from "../../utils/dataNameConverter.util";
+import PageLayout from "../../components/layout/pages/PageLayout.jsx";
+import { Tabs } from "../../components/Tabs.jsx";
+import { DataTable } from "../../components/DataTable.jsx";
+import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util.js";
+import { convertRequestStatusName } from "../../utils/dataNameConverter.util.js";
 
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
@@ -16,6 +17,27 @@ function UserRequestRecord() {
   // Data of request payments
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
+
+  const reimbursement_column = [
+    { key: "title", label: "品項" },
+    { key: "amount", label: "金額" },
+    { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
+    { key: "description", label: "備註" },
+    { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+    { key: "receipt_url", label: "收據或發票證明", render: (rec) => (
+      <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="receipt-link">
+        查看
+      </a>
+    ) }
+  ]
+
+  const budget_column = [
+    { key: "title", label: "品項" },
+    { key: "amount", label: "金額" },
+    { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
+    { key: "description", label: "備註" },
+    { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() }
+  ]
 
   useEffect(() => {
     fetchData();
@@ -32,7 +54,6 @@ function UserRequestRecord() {
 
   return (
   <>
-  {/* Tab button */}
   <Tabs
     activeTab={activeTab}
     setActiveTab={setActiveTab}
@@ -42,48 +63,27 @@ function UserRequestRecord() {
     ]}
   />
 
-  {/* Tab of my pending reimbursement */}
   {activeTab === TAB_REIMBURSEMENT && (
-  <div>
-    <h1 className="font-bold mb-6">我的報帳紀錄</h1>
+  <PageLayout title={"我的報帳紀錄"}>
     <DataTable
       data={reimbursements}
-      columns={[
-        { key: "title", label: "品項" },
-        { key: "amount", label: "金額" },
-        { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
-        { key: "description", label: "備註" },
-        { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-        { key: "receipt_url", label: "單據", render: (rec) => (
-            <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
-              查看
-            </a>
-          ) },
-      ]}
+      columns={reimbursement_column}
       emptyMessage="尚無紀錄"
     />
-  </div>
+  </PageLayout>
   )}
 
-  {/* Tab of my pending budget */}
   {activeTab === TAB_BUDGET && (
-  <div>
-    <h1 className="font-bold mb-6">我的申請經費紀錄</h1>
+  <PageLayout title={"我的申請經費紀錄"}>
     <DataTable
       data={budgets}
-      columns={[
-        { key: "title", label: "品項" },
-        { key: "amount", label: "金額" },
-        { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
-        { key: "description", label: "備註" },
-        { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-      ]}
+      columns={budget_column}
       emptyMessage="尚無紀錄"
     />
-  </div>
+  </PageLayout>
   )}
   </>
-  )
+  );
 }
 
 export default UserRequestRecord;

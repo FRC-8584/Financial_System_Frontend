@@ -1,6 +1,6 @@
 import React from "react";
 import DashboardSelector from "./DashboardSelector.jsx";
-import "../../styles/layout/header.css";
+import "./styles/header.css";
 
 export default function Header({ user, activeDashboard, onDashboardChange, showLogout }) {
   return (

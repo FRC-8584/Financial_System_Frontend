@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Tabs } from "../../components/Tabs";
-import { DataTable } from "../../components/DataTable";
-import { fetchBudgets, fetchReimbursements, fetchDisbursements } from "../../utils/fetchRequestData.util";
+import PageLayout from "../../components/layout/pages/PageLayout.jsx";
+import { Tabs } from "../../components/Tabs.jsx";
+import { DataTable } from "../../components/DataTable.jsx";
+import { fetchBudgets, fetchReimbursements, fetchDisbursements } from "../../utils/fetchRequestData.util.js";
 
 const TAB_DISBURSEMENT = "disbursement";
 const TAB_REIMBURSEMENT = "reimbursement";
@@ -18,6 +19,14 @@ function ManagerRequestRecord() {
   const [reimbursements, setReimbursements] = useState([]);
   const [disbursements, setDisbursements] = useState([]);
 
+  const disbursement_column = [
+    { key: "user", label: "報帳人", render: (rec) => rec.user.name },
+    { key: "title", label: "品項" },
+    { key: "amount", label: "金額" },
+    { key: "description", label: "備註" },
+    { key: "settledAt", label: "結清時間", render: (rec) => new Date(rec.settledAt).toLocaleString() }
+  ]
+
   useEffect(() => {
     fetchData();
   }, [token]);
@@ -32,7 +41,6 @@ function ManagerRequestRecord() {
 
   return (
   <>
-  {/* Tab button */}
   <Tabs
     activeTab={activeTab}
     setActiveTab={setActiveTab}
@@ -44,19 +52,13 @@ function ManagerRequestRecord() {
   />
 
   {activeTab === TAB_DISBURSEMENT && (
-  <div>
-    <h1 className="font-bold mb-6">已結清請款紀錄</h1>
+  <PageLayout title={"已結清請款紀錄"}>
     <DataTable
       data={disbursements}
-      columns={[
-        { key: "title", label: "品項" },
-        { key: "amount", label: "金額" },
-        { key: "description", label: "備註" },
-        { key: "settledAt", label: "結清時間", render: (rec) => new Date(rec.settledAt).toLocaleString() },
-      ]}
+      columns={disbursement_column}
       emptyMessage="尚無紀錄"
     />
-  </div>
+  </PageLayout>
   )}
 
   <div className="status">{status}</div>

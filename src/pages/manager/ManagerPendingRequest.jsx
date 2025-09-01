@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Tabs } from "../../components/Tabs";
-import { DataTable } from "../../components/DataTable";
-import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util";
-import { handleVerify, handleSettle } from "../../utils/handleRequestStatus.util";
+import { Tabs } from "../../components/Tabs.jsx";
+import PageLayout from "../../components/layout/pages/PageLayout.jsx"
+import { DataTable } from "../../components/DataTable.jsx";
+import { fetchBudgets, fetchReimbursements } from "../../utils/fetchRequestData.util.js";
+import { handleVerify } from "../../utils/handleRequestStatus.util.js";
 import "../../styles/pages/managerPendingRequest.css";
 
 // Server API routes
@@ -20,6 +21,59 @@ function ManagerPendingRequest() {
 
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
+
+  const reimbursement_column = [
+    { key: "user", label: "報帳人", render: (rec) => rec.user.name },
+    { key: "title", label: "品項" },
+    { key: "amount", label: "金額" },
+    { key: "description", label: "備註" },
+    { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+    { key: "receipt_url", label: "收據或發票證明", render: (rec) => (
+      <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
+        查看
+      </a>
+    ) },
+    { key: "", label: "", render: (rec) => (
+      <>
+      <button
+        className="action-button approve-button"
+        onClick={() => handleRequestAction(rec, 'approved')}
+      >
+        審核通過
+      </button>
+      <button
+        className="action-button reject-button"
+        onClick={() => handleRequestAction(rec, 'rejected')}
+      >
+        審核不通過
+      </button>
+      </>
+    ) }
+  ]
+
+  const budget_column = [
+    { key: "user", label: "報帳人", render: (rec) => rec.user.name },
+    { key: "title", label: "品項" },
+    { key: "amount", label: "金額" },
+    { key: "description", label: "備註" },
+    { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
+    { key: "", label: "", render: (rec) => (
+      <>
+      <button
+        className="action-button approve-button"
+        onClick={() => handleRequestAction(rec, 'approved')}
+      >
+        審核通過
+      </button>
+      <button
+        className="action-button reject-button"
+        onClick={() => handleRequestAction(rec, 'rejected')}
+      >
+        審核不通過
+      </button>
+      </>
+    ) }
+  ]
 
   useEffect(() => {
     fetchData();
@@ -49,84 +103,38 @@ function ManagerPendingRequest() {
   };
 
   return (
-    <>
-      <Tabs
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        tabs={[
-          { value: TAB_REIMBURSEMENT, label: "報帳" },
-          { value: TAB_BUDGET, label: "申請經費" },
-        ]}
+  <>
+  <Tabs
+    activeTab={activeTab}
+    setActiveTab={setActiveTab}
+    tabs={[
+      { value: TAB_REIMBURSEMENT, label: "報帳" },
+      { value: TAB_BUDGET, label: "申請經費" },
+    ]}
+  />
+
+  {activeTab === TAB_REIMBURSEMENT && (
+    <PageLayout title={"待審核報帳款項"}>
+      <DataTable
+        data={reimbursements}
+        columns={reimbursement_column}
+        emptyMessage="尚無紀錄"
       />
+    </PageLayout>
+  )}
 
-      {activeTab === TAB_REIMBURSEMENT && (
-        <div className="manager-pending-request-section">
-          <h1 className="request-title">待審核報帳款項</h1>
-          <DataTable
-            data={reimbursements}
-            columns={[
-              { key: "title", label: "品項" },
-              { key: "amount", label: "金額" },
-              { key: "description", label: "備註" },
-              { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-              { key: "receipt_url", label: "單據", render: (rec) => (
-                  <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="receipt-link">查看</a>
-                ) },
-              { key: "", label: "", render: (rec) => (
-                  <>
-                    <button
-                      className="action-button approve-button"
-                      onClick={() => handleRequestAction(rec, 'approved')}
-                    >
-                      審核通過
-                    </button>
-                    <button
-                      className="action-button reject-button"
-                      onClick={() => handleRequestAction(rec, 'rejected')}
-                    >
-                      審核不通過
-                    </button>
-                  </>
-                ) },
-            ]}
-            emptyMessage="尚無紀錄"
-          />
-        </div>
-      )}
+  {activeTab === TAB_BUDGET && (
+    <PageLayout title={"待審核申請經費款項"}>
+      <DataTable
+        data={budgets}
+        columns={budget_column}
+        emptyMessage="尚無紀錄"
+      />
+    </PageLayout>
+  )}
 
-      {activeTab === TAB_BUDGET && (
-        <div className="manager-pending-request-section">
-          <h1 className="request-title">待審核申請經費款項</h1>
-          <DataTable
-            data={budgets}
-            columns={[
-              { key: "title", label: "品項" },
-              { key: "amount", label: "金額" },
-              { key: "description", label: "備註" },
-              { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-              { key: "", label: "", render: (rec) => (
-                  <>
-                    <button
-                      className="action-button approve-button"
-                      onClick={() => handleRequestAction(rec, 'approved')}
-                    >
-                      審核通過
-                    </button>
-                    <button
-                      className="action-button reject-button"
-                      onClick={() => handleRequestAction(rec, 'rejected')}
-                    >
-                      審核不通過
-                    </button>
-                  </>
-                ) },
-            ]}
-            emptyMessage="尚無紀錄"
-          />
-        </div>
-      )}
-      <div className="status">{status}</div>
-    </>
+  <div className="status">{status}</div>
+  </>
   );
 }
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import Layout from "../../components/layout/Layout.jsx";
+import DashboardLayout from "../../components/layout/dashboard/DashboardLayout.jsx";
 
 const links = [
   { label: "團隊請款紀錄", href: "requestRecord" },
@@ -19,9 +19,9 @@ function ManagerDashboard() {
   }, [token, navigate]);
 
   return (
-    <Layout links={links}>
+    <DashboardLayout links={links}>
       <Outlet context={{ token }} /> {/* Children routes */}
-    </Layout>
+    </DashboardLayout>
   );
 }
 

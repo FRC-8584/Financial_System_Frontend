@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../styles/layout/dashboardSelector.css";
+import "./styles/dashboardSelector.css";
 
 export default function DashboardSelector({ role, value, onChange }) {
   const [open, setOpen] = useState(false);

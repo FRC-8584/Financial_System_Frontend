@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
 import Header from "./Header.jsx";
-import "../../styles/layout/layout.css";
-import { LogoutConfirm } from "../LogoutConfirm.jsx";
+import "./styles/layout.css";
+import { LogoutConfirm } from "./LogoutConfirm.jsx";
 
-export default function Layout({ links, children }) {
+export default function DashboardLayout({ links, children }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [activeDashboard, setActiveDashboard] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));

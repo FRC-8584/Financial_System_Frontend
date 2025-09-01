@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useOutletContext } from "react-router-dom";
+import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { Tabs } from "../../components/Tabs.jsx";
 import Form from "../../components/form/Form.jsx";
 import InputField from "../../components/form/InputField.jsx";
@@ -76,96 +77,91 @@ function UserCreateRequest() {
   };
 
   return (
-    <>
-      {/* Tabs */}
-      <Tabs
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        tabs={[
-          { value: TAB_REIMBURSEMENT, label: "報帳" },
-          { value: TAB_BUDGET, label: "申請經費" },
-        ]}
-      />
+  <>
+  <Tabs
+    activeTab={activeTab}
+    setActiveTab={setActiveTab}
+    tabs={[
+      { value: TAB_REIMBURSEMENT, label: "報帳" },
+      { value: TAB_BUDGET, label: "申請經費" },
+    ]}
+  />
 
-      {/* Reimbursement */}
-      {activeTab === TAB_REIMBURSEMENT && (
-        <div id="createReimbursement" className="tab-content active">
-          <h1 className="font-bold mb-6">新增報帳</h1>
-          <Form onSubmit={handleReimbursementSubmit}>
-            <InputField
-              label="品項"
-              type="text"
-              name="title"
-              value={reimbursementForm.title}
-              onChange={handleChange(setReimbursementForm)}
-            />
-            <InputField
-              label="報帳金額"
-              type="number"
-              name="amount"
-              value={reimbursementForm.amount}
-              onChange={handleChange(setReimbursementForm)}
-            />
-            <div className="form-group">
-              <label className="form-label">備註</label>
-              <textarea
-                name="description"
-                className="form-input"
-                value={reimbursementForm.description}
-                onChange={handleChange(setReimbursementForm)}
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">發票或證明上傳</label>
-              <input
-                type="file"
-                accept="image/*"
-                name="receipt"
-                className="form-input"
-                onChange={handleChange(setReimbursementForm)}
-                required
-              />
-            </div>
-            <SubmitButton text="送出款項" />
-          </Form>
-          {status && <p className="mt-4 text-sm">{status}</p>}
+  {activeTab === TAB_REIMBURSEMENT && (
+    <PageLayout title={"新增報帳"}>
+      <Form onSubmit={handleReimbursementSubmit}>
+        <InputField
+          label="品項"
+          type="text"
+          name="title"
+          value={reimbursementForm.title}
+          onChange={handleChange(setReimbursementForm)}
+        />
+        <InputField
+          label="報帳金額"
+          type="number"
+          name="amount"
+          value={reimbursementForm.amount}
+          onChange={handleChange(setReimbursementForm)}
+        />
+        <div className="form-group">
+          <label className="form-label">備註</label>
+          <textarea
+            name="description"
+            className="form-input"
+            value={reimbursementForm.description}
+            onChange={handleChange(setReimbursementForm)}
+          />
         </div>
-      )}
+        <div className="form-group">
+          <label className="form-label">發票或證明上傳</label>
+          <input
+            type="file"
+            accept="image/*"
+            name="receipt"
+            className="form-input"
+            onChange={handleChange(setReimbursementForm)}
+            required
+          />
+        </div>
+        <SubmitButton text="送出款項" />
+      </Form>
+    </PageLayout>
+  )}
 
-      {/* Budget */}
-      {activeTab === TAB_BUDGET && (
-        <div id="createBudget" className="tab-content">
-          <h1 className="font-bold mb-6">新增申請經費</h1>
-          <Form onSubmit={handleBudgetSubmit}>
-            <InputField
-              label="品項"
-              type="text"
-              name="title"
-              value={budgetForm.title}
-              onChange={handleChange(setBudgetForm)}
-            />
-            <InputField
-              label="申請金額"
-              type="number"
-              name="amount"
-              value={budgetForm.amount}
-              onChange={handleChange(setBudgetForm)}
-            />
-            <div className="form-group">
-              <label className="form-label">備註</label>
-              <textarea
-                name="description"
-                className="form-input"
-                value={budgetForm.description}
-                onChange={handleChange(setBudgetForm)}
-              />
-            </div>
-            <SubmitButton text="送出款項" />
-          </Form>
-          {status && <p className="mt-4 text-sm">{status}</p>}
+  {activeTab === TAB_BUDGET && (
+    <PageLayout title={"新增報帳"}>
+      <Form onSubmit={handleBudgetSubmit}>
+        <InputField
+          label="品項"
+          type="text"
+          name="title"
+          value={budgetForm.title}
+          onChange={handleChange(setBudgetForm)}
+        />
+        <InputField
+          label="申請金額"
+          type="number"
+          name="amount"
+          value={budgetForm.amount}
+          onChange={handleChange(setBudgetForm)}
+        />
+        <div className="form-group">
+          <label className="form-label">備註</label>
+          <textarea
+            name="description"
+            className="form-input"
+            value={budgetForm.description}
+            onChange={handleChange(setBudgetForm)}
+          />
         </div>
-      )}
-    </>
+        <SubmitButton text="送出款項" />
+      </Form>
+    </PageLayout>
+  )}
+
+  {status && <p className="mt-4 text-sm">{status}</p>}
+  </>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/form.css";
+import "./form.css";
 
 const InputField = ({ label, type, name, value, onChange }) => {
   return (

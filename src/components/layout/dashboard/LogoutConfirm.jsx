@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ConfirmDialog } from "./ConfirmDialog.jsx";
+import { ConfirmDialog } from "../../ConfirmDialog.jsx";
 
 export function LogoutConfirm({ setShowLogoutConfirm }) {
   const navigate = useNavigate();
