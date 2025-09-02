@@ -32,12 +32,13 @@
   max-width: 100px;
   border: none;
   border-radius: 8px;
-  background-color: rgb(9, 97, 168);
+  background-color: rgb(0, 100, 190);
   color: white;
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .form-submit:hover {
-  background-color: rgb(9, 75, 129);
+  background-color: rgb(25, 120, 220);
 }

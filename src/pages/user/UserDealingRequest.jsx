@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs";
 import { DataTable } from "../../components/DataTable.jsx";
+import { ReceiptUrl } from "../../components/ReceiptUrl.jsx";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
 
@@ -22,10 +23,8 @@ function UserDealingRequest() {
     { key: "amount", label: "金額" },
     { key: "description", label: "備註" },
     { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-    { key: "receipt_url", label: "收據或發票證明", render: (rec) => (
-      <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="text-black underline">
-        查看
-      </a>
+    { key: "receiptUrl", label: "收據或發票證明", render: (rec) => (
+      <ReceiptUrl  url={rec.receiptUrl} text={"查看"}/>
     ) },
   ]
 

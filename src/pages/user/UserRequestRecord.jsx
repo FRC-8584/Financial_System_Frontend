@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { Tabs } from "../../components/Tabs.jsx";
 import { DataTable } from "../../components/DataTable.jsx";
+import { ReceiptUrl } from "../../components/ReceiptUrl.jsx";
 import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
 import { convertRequestStatusName } from "../../utils/dataNameConverter.util.js";
 
@@ -24,10 +25,8 @@ function UserRequestRecord() {
     { key: "status", label: "狀態", render: (rec) => convertRequestStatusName(rec.status) },
     { key: "description", label: "備註" },
     { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
-    { key: "receipt_url", label: "收據或發票證明", render: (rec) => (
-      <a href={rec.receipt_url} target="_blank" rel="noreferrer" className="receipt-link">
-        查看
-      </a>
+    { key: "receiptUrl", label: "收據或發票證明", render: (rec) => (
+      <ReceiptUrl  url={rec.receiptUrl} text={"查看"}/>
     ) }
   ]
 

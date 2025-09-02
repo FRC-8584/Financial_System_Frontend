@@ -1,33 +1,33 @@
-/* Settle Button */
-.settle-button {
-  padding: 8px 16px;
-  margin-left: 12px;
-  margin-right: 12px;
-  background-color: rgb(26, 82, 160);;
-  color: white;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-.settle-button:hover {
-  background-color: rgb(28, 100, 194);
-}
-
-/* Export Button */
+.settle-button,
 .export-button {
   padding: 8px 16px;
   margin-left: 12px;
   margin-right: 12px;
-  background-color: rgb(26, 82, 160);
-  color: white;
   border-radius: 6px;
   transition: background-color 0.2s ease;
 }
+
+/* Settle Button */
+.settle-button {
+  background-color: rgb(0, 100, 190);
+  color: white;
+}
+.settle-button:hover {
+  background-color: rgb(25, 120, 220);
+}
+
+/* Export Button */
+.export-button {
+  background-color: rgb(0, 100, 190);
+  color: white;
+}
 .export-button:hover {
-  background-color: rgb(28, 100, 194);
+  background-color: rgb(25, 120, 220);
 }
 
 /* Receipt Link */
 .receipt-link {
-  color: black;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
   text-decoration: underline;
 }
