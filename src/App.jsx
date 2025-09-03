@@ -1,11 +1,14 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Login from "./pages/Login.jsx";
 
 // Dashboard
 import UserDashboard from "./pages/dashboards/UserDashboard.jsx";
 import ManagerDashboard from "./pages/dashboards/ManagerDashboard.jsx";
 import AdminDashboard from "./pages/dashboards/AdminDashboard.jsx";
+
+// Pages
+import Login from "./pages/Login.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 import UserRequestRecord from "./pages/user/UserRequestRecord.jsx"
 import UserCreateRequest from "./pages/user/UserCreateRequest.jsx"
@@ -18,8 +21,6 @@ import ManagerDealingRequest from "./pages/manager/ManagerDealingRequest.jsx"
 
 import AdminUsersProfile from "./pages/admin/AdminUsersProfile.jsx";
 import AdminRegisterAccount from "./pages/admin/AdminRegisterAccount.jsx";
-
-import NotFound from "./pages/NotFound.jsx";
 
 function App() {
   return (

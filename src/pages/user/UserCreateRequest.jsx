@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { Tabs } from "../../components/Tabs.jsx";
-import Form from "../../components/form/Form.jsx";
-import InputField from "../../components/form/InputField.jsx";
+import ReimbursementForm from "../../components/form/ReimbursementForm.jsx";
+import BudgetForm from "../../components/form/BudgetForm.jsx";
 import SubmitButton from "../../components/form/SubmitButton.jsx";
 import { submitReimbursement, submitBudget } from "../../utils/handleCreateRequest.js";
 
@@ -27,20 +27,6 @@ function UserCreateRequest() {
     amount: "",
     description: "",
   });
-
-  const handleChange = (setter) => (e) => {
-    const { name, value, files } = e.target;
-
-    if (name === "amount") {
-      const num = Number(value);
-      if (num < 0) return;
-    }
-
-    setter((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
-  };
 
   const handleReimbursementSubmit = async (e) => {
     e.preventDefault();
@@ -86,75 +72,24 @@ function UserCreateRequest() {
   />
 
   {activeTab === TAB_REIMBURSEMENT && (
-    <PageLayout title={"新增報帳"}>
-      <Form onSubmit={handleReimbursementSubmit}>
-        <InputField
-          label="品項"
-          type="text"
-          name="title"
-          value={reimbursementForm.title}
-          onChange={handleChange(setReimbursementForm)}
-        />
-        <InputField
-          label="報帳金額"
-          type="number"
-          name="amount"
-          value={reimbursementForm.amount}
-          onChange={handleChange(setReimbursementForm)}
-        />
-        <div className="form-group">
-          <label className="form-label">備註</label>
-          <textarea
-            name="description"
-            className="form-input"
-            value={reimbursementForm.description}
-            onChange={handleChange(setReimbursementForm)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="form-label">發票或證明上傳</label>
-          <input
-            type="file"
-            accept="image/*"
-            name="receipt"
-            className="form-input"
-            onChange={handleChange(setReimbursementForm)}
-            required
-          />
-        </div>
-        <SubmitButton text="送出款項" />
-      </Form>
+    <PageLayout title={"新增報帳款項"}>
+      <ReimbursementForm
+        formData={reimbursementForm}
+        setFormData={setReimbursementForm}
+      >
+        <SubmitButton text="送出款項" onClickAction={handleReimbursementSubmit} />
+      </ReimbursementForm>
     </PageLayout>
   )}
 
   {activeTab === TAB_BUDGET && (
-    <PageLayout title={"新增報帳"}>
-      <Form onSubmit={handleBudgetSubmit}>
-        <InputField
-          label="品項"
-          type="text"
-          name="title"
-          value={budgetForm.title}
-          onChange={handleChange(setBudgetForm)}
-        />
-        <InputField
-          label="申請金額"
-          type="number"
-          name="amount"
-          value={budgetForm.amount}
-          onChange={handleChange(setBudgetForm)}
-        />
-        <div className="form-group">
-          <label className="form-label">備註</label>
-          <textarea
-            name="description"
-            className="form-input"
-            value={budgetForm.description}
-            onChange={handleChange(setBudgetForm)}
-          />
-        </div>
-        <SubmitButton text="送出款項" />
-      </Form>
+    <PageLayout title={"新增申請經費款項"}>
+      <BudgetForm
+        formData={budgetForm}
+        setFormData={setBudgetForm}
+      >
+        <SubmitButton text="送出款項" onClickAction={handleBudgetSubmit}/>
+      </BudgetForm>
     </PageLayout>
   )}
 

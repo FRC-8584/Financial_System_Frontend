@@ -1,10 +1,11 @@
 import React from "react";
-import "./styles/button.css"
+import "./styles/button.css";
 
-export function Button({ text, btnType, onClickAction }) {
+export function Button({ text, btnType = "blue-type", onClickAction, type = "button" }) {
   return (
     <button
-      className={"button " + (btnType || "blue-type")}
+      type={type}
+      className={`button ${btnType}`}
       onClick={onClickAction}
     >
       {text}

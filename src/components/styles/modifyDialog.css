@@ -21,37 +21,10 @@
   animation: fadeIn 0.2s ease-in-out;
 }
 
-.modify-dialog h2 {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.modify-dialog label {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-}
-
-.modify-dialog input,
-.modify-dialog textarea {
-  margin-top: 6px;
-  padding: 8px 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  transition: border 0.2s;
-}
-
-.modify-dialog input:focus,
-.modify-dialog textarea:focus {
-  border-color: #007bff;
-  outline: none;
+.modify-dialog .form-container {
+  box-shadow: none;
+  border: none;
+  padding: 0;
 }
 
 .modify-dialog-actions {
@@ -61,7 +34,6 @@
   gap: 12px;
 }
 
-.confirm-btn,
 .cancel-btn {
   padding: 8px 16px;
   border: none;
@@ -69,33 +41,10 @@
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-
-.confirm-btn {
-  background: rgb(0, 100, 190);
-  color: white;
-}
-
-.confirm-btn:hover {
-  background: rgb(25, 120, 220);
-}
-
-.cancel-btn {
   background: #e0e0e0;
   color: #333;
 }
 
 .cancel-btn:hover {
   background: #c2c2c2;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }

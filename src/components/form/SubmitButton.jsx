@@ -1,12 +1,8 @@
 import React from "react";
-import "./form.css";
+import { Button } from "../Button.jsx";
 
-const SubmitButton = ({ text }) => {
-  return (
-    <button type="submit" className="form-submit">
-      {text}
-    </button>
-  );
+const SubmitButton = ({ text, onClickAction }) => {
+  return <Button text={text} btnType="blue-type" type="button" onClickAction={onClickAction} />;
 };
 
 export default SubmitButton;

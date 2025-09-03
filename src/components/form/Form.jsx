@@ -1,9 +1,15 @@
 import React from "react";
 import "./form.css";
 
-const Form = ({ children, onSubmit }) => {
+const Form = ({ onSubmit, children }) => {
   return (
-    <form className="form-container" onSubmit={onSubmit}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+      className="form-container"
+    >
       {children}
     </form>
   );

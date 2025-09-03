@@ -11,7 +11,7 @@ export const submitReimbursement = async (token, data) => {
     });
 
     if (!res.ok) throw new Error("報帳送出失敗");
-    return await res.json();
+    return (await res.json()).result;
   } catch (err) {
     throw err;
   }
@@ -29,7 +29,7 @@ export const submitBudget = async (token, data) => {
     });
 
     if (!res.ok) throw new Error("經費申請送出失敗");
-    return await res.json();
+    return (await res.json()).result;
   } catch (err) {
     throw err;
   }

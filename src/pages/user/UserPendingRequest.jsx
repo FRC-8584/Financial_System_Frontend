@@ -100,17 +100,23 @@ function UserPendingRequest() {
     setItemToDelete(null); 
   };
 
-  const handleFinalModify = async (data, id, type, token) => {
+  const handleFinalModify = async (data, id, type) => {
     try {
       if (type === "reimbursement") {
-        await handleModifyReimbursement(data, id, token);
+        const formData = new FormData();
+        formData.append("title", data.title);
+        formData.append("amount", data.amount);
+        formData.append("description", data.description);
+        formData.append("receipt", data.receipt);
+
+        const updatedData = await handleModifyReimbursement(formData, id, token);
         setReimbursements(prev =>
-          prev.map(item => item.id === id ? { ...item, ...data } : item)
+          prev.map(item => item.id === id ? updatedData : item)
         );
       } else if (type === "budget") {
-        await handleModifyBudget(data, id, token);
+        const updatedData = await handleModifyBudget(data, id, token);
         setBudgets(prev =>
-          prev.map(item => item.id === id ? { ...item, ...data } : item)
+          prev.map(item => item.id === id ? updatedData : item)
         );
       }
       setStatus("修改成功！");
@@ -164,9 +170,8 @@ function UserPendingRequest() {
     <ModifyDialog
       id={itemToModify.id}
       type={itemToModify.type}
-      token={token}
       initialData={itemToModify}
-      onConfirm={handleFinalModify}
+      onSubmit={(formData, id, type) => handleFinalModify(formData, id, type)}
       onClose={() => setItemToModify(null)}
     />
   )}

@@ -75,17 +75,18 @@ function AdminRegisterAccount() {
         value={userProfileForm.password}
         onChange={handleChange(setUserProfileForm)}
       />
-      <label className="font-semibold">權限</label>
-      <select
+      <InputField
+        label="權限"
+        type="select"
         name="role"
         value={userProfileForm.role}
         onChange={handleChange(setUserProfileForm)}
-        className="border p-2 w-full rounded-lg"
-      >
-        <option value="member">一般成員</option>
-        <option value="manager">財務管理員</option>
-        <option value="admin">管理員</option>
-      </select>
+        options={[
+          { label: "一般成員", value: "member" },
+          { label: "財務管理員", value: "manager" },
+          { label: "管理員", value: "admin" },
+        ]}
+      />
       <SubmitButton text="註冊用戶" />
     </Form>
   </PageLayout>
