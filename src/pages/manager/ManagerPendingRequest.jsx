@@ -3,10 +3,10 @@ import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs.jsx";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx"
 import { DataTable } from "../../components/DataTable.jsx";
+import { Button } from "../../components/Button.jsx";
 import { ReceiptUrl } from "../../components/ReceiptUrl.jsx";
 import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
 import { handleVerify } from "../../utils/handleSetRequestStatus.js";
-import "../../styles/pages/managerPendingRequest.css";
 
 // Server API routes
 const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
@@ -34,18 +34,14 @@ function ManagerPendingRequest() {
     ) },
     { key: "", label: "", render: (rec) => (
       <>
-      <button
-        className="action-button approve-button"
-        onClick={() => handleRequestAction(rec, 'approved')}
-      >
-        審核通過
-      </button>
-      <button
-        className="action-button reject-button"
-        onClick={() => handleRequestAction(rec, 'rejected')}
-      >
-        審核不通過
-      </button>
+      <Button
+        text={"審核通過"} btnType={"green-type"}
+        onClickAction={() => handleRequestAction(rec, 'approved')}
+      />
+      <Button
+        text={"審核不通過"} btnType={"red-type"}
+        onClickAction={() => handleRequestAction(rec, 'rejected')}
+      />
       </>
     ) }
   ]
@@ -82,6 +78,7 @@ function ManagerPendingRequest() {
     try {
       await fetchBudgets({ setBudgets, token, param: "?status=pending" });
       await fetchReimbursements({ setReimbursements, token, param: "?status=pending" });
+      setStatus("");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -95,7 +92,7 @@ function ManagerPendingRequest() {
     try {
       await handleVerify(apiRoute, rec.id, actionType, token);
       setRequestData(prev => prev.filter(item => item.id !== rec.id));
-      setStatus(`審核${actionType === 'approved' ? '通過' : '不通過'}成功！`);
+      setStatus("已審核！");
     } catch (err) {
       setStatus("審核失敗：" + err.message);
     }

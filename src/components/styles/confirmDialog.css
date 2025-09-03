@@ -17,29 +17,6 @@
   gap: 16px;
 }
 
-.button {
-  padding: 8px 16px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  border: none;
-  cursor: pointer;
-}
-
-.cancel {
-  background-color: rgb(209, 213, 219);
-}
-.cancel:hover {
-  background-color: rgb(156, 163, 175);
-}
-
-.confirm {
-  background-color: rgb(26, 82, 160);
-  color: white;
-}
-.confirm:hover {
-  background-color: rgb(28, 100, 194);
-}
-
 .overlay {
   position: fixed;
   top: 0;

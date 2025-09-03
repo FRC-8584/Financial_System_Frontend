@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Tabs } from "../../components/Tabs.jsx";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx"
 import { DataTable } from "../../components/DataTable.jsx";
+import { Button } from "../../components/Button.jsx";
 import { ReceiptUrl } from "../../components/ReceiptUrl.jsx";
 import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
 import { handleSettle } from "../../utils/handleSetRequestStatus.js";
 import { fetchReimbursementRequest } from "../../utils/handleExportExcel.js";
-import "../../styles/pages/managerDealingRequest.css";
 
 // Server API routes
 const BUDGET_API_ROUTE = 'http://localhost:3000/api/budget';
@@ -35,11 +35,10 @@ function ManagerDealingRequest() {
       <ReceiptUrl  url={rec.receiptUrl} text={"查看"}/>
     ) },
     { key: "", label: "", render: (rec) => (
-      <button className="settle-button"
-        onClick={() => handleSettleAndRemove(REIMBURSEMENT_API_ROUTE, rec.id)}
-      >
-        標記結清
-      </button>
+      <Button
+        text={"標記結清"} btnType={"blue-type"}
+        onClickAction={() => handleSettleAndRemove(REIMBURSEMENT_API_ROUTE, rec.id)}
+      />
     ) }
   ]
 
@@ -50,15 +49,18 @@ function ManagerDealingRequest() {
     { key: "description", label: "備註" },
     { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
     { key: "", label: "", render: (rec) => (
-      <button className="settle-button"
-        onClick={() => handleSettleAndRemove(BUDGET_API_ROUTE, rec.id)}
-      >
-        標記結清
-      </button>
+      <Button
+        text={"標記結清"} btnType={"blue-type"}
+        onClickAction={() => handleSettleAndRemove(BUDGET_API_ROUTE, rec.id)}
+      />
     ) }
   ]
+  
+  useEffect(() => {
+    fetchData();
+  }, [token]);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     try {
       await fetchBudgets({ setBudgets, token, param: "?status=approved" });
       await fetchReimbursements({ setReimbursements, token, param: "?status=approved" });
@@ -66,11 +68,7 @@ function ManagerDealingRequest() {
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
-  }, [token]);
-  
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  };
 
   const handleSettleAndRemove = async (apiRoute, id) => {
     try {
@@ -115,14 +113,10 @@ function ManagerDealingRequest() {
       emptyMessage="尚無紀錄"
     />
     {reimbursements.length > 0 && (
-    <div>
-      <button 
-        className="export-button"
-        onClick={handleDownloadExcel}
-      >
-        輸出請款單
-      </button>
-    </div>
+    <Button
+      text={"輸出請款單"} btnType={"blue-type"}
+      onClickAction={handleDownloadExcel}
+    />
     )}
   </PageLayout>
   )}

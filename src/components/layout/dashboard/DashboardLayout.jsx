@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
 import Header from "./Header.jsx";
+import { ConfirmDialog } from "../../ConfirmDialog.jsx";
 import "./styles/layout.css";
-import { LogoutConfirm } from "./LogoutConfirm.jsx";
 
 export default function DashboardLayout({ links, children }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -12,22 +12,22 @@ export default function DashboardLayout({ links, children }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-useEffect(() => {
-  const currentPath = location.pathname.split('/')[1]; 
+  useEffect(() => {
+    const currentPath = location.pathname.split('/')[1]; 
 
-  if (!user || !user.role) {
-    alert("請先登入");
-    navigate("/");
-    return;
-  }
+    if (!user || !user.role) {
+      alert("請先登入");
+      navigate("/");
+      return;
+    }
 
-  if (!hasPermission(currentPath)) {
-    const defaultDashboard = hasPermission("user-dashboard") ? "user-dashboard" : "";
-    navigate(`/${defaultDashboard}`);
-  } else {
-    setActiveDashboard(currentPath);
-  }
-}, [location, navigate, user]);
+    if (!hasPermission(currentPath)) {
+      const defaultDashboard = hasPermission("user-dashboard") ? "user-dashboard" : "";
+      navigate(`/${defaultDashboard}`);
+    } else {
+      setActiveDashboard(currentPath);
+    }
+  }, [location, navigate, user]);
 
   const hasPermission = (d) => {
     if (!user.role) return false;
@@ -47,6 +47,11 @@ useEffect(() => {
     navigate(`/${selectedValue}`);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
   return (
     <div className="layout">
       <Header
@@ -61,7 +66,11 @@ useEffect(() => {
       </div>
 
       {showLogoutConfirm && (
-        <LogoutConfirm setShowLogoutConfirm={setShowLogoutConfirm} />
+      <ConfirmDialog
+        message="確定要登出嗎？"
+        onConfirm={handleLogout}
+        onClose={() => setShowLogoutConfirm(false)}
+      />
       )}
     </div>
   );

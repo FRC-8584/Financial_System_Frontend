@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { Tabs } from "../../components/Tabs.jsx";
 import { DataTable } from "../../components/DataTable.jsx";
+import { Button } from "../../components/Button.jsx";
 import { ReceiptUrl } from "../../components/ReceiptUrl.jsx";
 import { fetchBudgets, fetchReimbursements, fetchDisbursements } from "../../utils/handleFetchRequest.js";
 import { fetchRequestRecordExcel } from "../../utils/handleExportExcel.js";
@@ -60,6 +61,7 @@ function ManagerRequestRecord() {
       await fetchDisbursements({ setDisbursements, token });
       await fetchReimbursements({ setReimbursements, token });
       await fetchBudgets({ setBudgets, token });
+      setStatus("");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -95,14 +97,10 @@ function ManagerRequestRecord() {
       emptyMessage="尚無紀錄"
     />
     {disbursements.length > 0 && (
-    <div>
-      <button 
-        className="export-button"
-        onClick={handleDownloadExcel}
-      >
-        輸出請款紀錄表
-      </button>
-    </div>
+    <Button
+      text={"輸出請款紀錄表"} btnType={"blue-type"}
+      onClickAction={handleDownloadExcel}
+    />
     )}
   </PageLayout>
   )}

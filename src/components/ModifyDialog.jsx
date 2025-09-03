@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/modifyDialog.css";
+import "./styles/modifyDialog.css";
 
 export function ModifyDialog({ id, type, token, initialData, onConfirm, onClose }) {
   const [form, setForm] = useState({ title: "", amount: "", description: "" });

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
+import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { DataTable } from "../../components/DataTable.jsx";
 import { fetchAllUsersProfile } from "../../utils/handleUserData.js";
 import { convertRoleName } from "../../utils/dataNameConverter.util.js";
-import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 
 function AdminUsersProfile() {
   const { token } = useOutletContext();
@@ -25,6 +25,7 @@ function AdminUsersProfile() {
   const fetchData = async () => {
     try {
       await fetchAllUsersProfile({ setUsersProfile, token });
+      setStatus("");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }

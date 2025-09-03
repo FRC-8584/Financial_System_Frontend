@@ -1,5 +1,6 @@
 import React from "react";
 import DashboardSelector from "./DashboardSelector.jsx";
+import { Button } from "../../Button.jsx";
 import "./styles/header.css";
 
 export default function Header({ user, activeDashboard, onDashboardChange, showLogout }) {
@@ -15,10 +16,14 @@ export default function Header({ user, activeDashboard, onDashboardChange, showL
       </div>
 
       <div className="user-actions">
-        <div className="user-profile">{user.name}</div>
-        <button className="logout-button" onClick={showLogout}>
-          登出
-        </button>
+        <Button 
+          text={user.name} btnType={"gray-type"}
+          onClickAction={() => {}}
+        />
+        <Button 
+          text={"登出"} btnType={"red-type"}
+          onClickAction={showLogout}
+        />
       </div>
     </header>
   );

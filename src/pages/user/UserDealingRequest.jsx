@@ -43,6 +43,7 @@ function UserDealingRequest() {
     try {
       await fetchBudgets({ setBudgets, token, param: "?status=approved" }, true);
       await fetchReimbursements({ setReimbursements, token, param: "?status=approved" }, true);
+      setStatus("");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -78,6 +79,8 @@ function UserDealingRequest() {
     />
   </PageLayout>
   )}
+
+  <div className="status">{status}</div>
   </>
   );
 }

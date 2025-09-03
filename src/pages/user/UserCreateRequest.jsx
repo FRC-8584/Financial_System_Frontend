@@ -15,7 +15,6 @@ function UserCreateRequest() {
   const [activeTab, setActiveTab] = useState(TAB_REIMBURSEMENT);
   const [status, setStatus] = useState("");
 
-  // Reimbursement state
   const [reimbursementForm, setReimbursementForm] = useState({
     title: "",
     amount: "",
@@ -23,7 +22,6 @@ function UserCreateRequest() {
     receipt: null,
   });
 
-  // Budget state
   const [budgetForm, setBudgetForm] = useState({
     title: "",
     amount: "",
@@ -160,7 +158,7 @@ function UserCreateRequest() {
     </PageLayout>
   )}
 
-  {status && <p className="mt-4 text-sm">{status}</p>}
+  <div className="status">{status}</div>
   </>
   );
 }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
+import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import Form from "../../components/form/Form.jsx";
 import InputField from "../../components/form/InputField.jsx";
 import SubmitButton from "../../components/form/SubmitButton.jsx";
 import { handleRegister } from "../../utils/handleUserData.js";
-import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 
 function AdminRegisterAccount() {
   const { token } = useOutletContext();
@@ -51,6 +51,7 @@ function AdminRegisterAccount() {
   };
 
   return (
+  <>
   <PageLayout title={"註冊使用者"}>
     <Form onSubmit={handleRegisterationSubmit}>
       <InputField
@@ -87,8 +88,10 @@ function AdminRegisterAccount() {
       </select>
       <SubmitButton text="註冊用戶" />
     </Form>
-    {status && <p className="mt-4 text-sm">{status}</p>}
   </PageLayout>
+
+  <div className="status">{status}</div>
+  </>
   );
 }
 

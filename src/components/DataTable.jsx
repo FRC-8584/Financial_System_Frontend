@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/dataTable.css";
+import "./styles/dataTable.css";
 
 export function DataTable({ data, columns, emptyMessage }) {
   return (

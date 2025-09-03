@@ -46,6 +46,7 @@ function UserRequestRecord() {
     try {
       await fetchBudgets({ setBudgets, token }, true);
       await fetchReimbursements({ setReimbursements, token }, true);
+      setStatus("");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -81,6 +82,8 @@ function UserRequestRecord() {
     />
   </PageLayout>
   )}
+
+  <div className="status">{status}</div>
   </>
   );
 }

@@ -3,14 +3,14 @@ import { useOutletContext } from "react-router-dom";
 import PageLayout from "../../components/layout/pages/PageLayout.jsx";
 import { Tabs } from "../../components/Tabs.jsx";
 import { DataTable } from "../../components/DataTable.jsx";
+import { Button } from "../../components/Button.jsx";
 import { ReceiptUrl } from "../../components/ReceiptUrl.jsx";
-import { DeleteConfirm } from "../../components/DeleteConfirm.jsx";
+import { ConfirmDialog } from "../../components/ConfirmDialog.jsx";
 import { ModifyDialog } from "../../components/ModifyDialog.jsx";
 import { fetchBudgets, fetchReimbursements } from "../../utils/handleFetchRequest.js";
 import { handleModifyBudget, handleModifyReimbursement } from "../../utils/handleModifyRequest.js";
 import { handleDeleteBudget, handleDeleteReimbursement } from "../../utils/handleDeleteRequest.js";
 import { convertRequestStatusName } from "../../utils/dataNameConverter.util.js";
-import "../../styles/pages/userPendingRequest.css";
 
 const TAB_REIMBURSEMENT = "reimbursement";
 const TAB_BUDGET = "budget";
@@ -23,6 +23,9 @@ function UserPendingRequest() {
   // Request data
   const [reimbursements, setReimbursements] = useState([]);
   const [budgets, setBudgets] = useState([]);
+  
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [itemToModify, setItemToModify] = useState(null);
 
   const reimbursement_column = [
     { key: "title", label: "品項" },
@@ -35,18 +38,14 @@ function UserPendingRequest() {
     ) },
     { key: "", label: "", render: (rec) => (
       <>
-        <button
-          className="action-button modify-button"
-          onClick={() => setItemToModify({ ...rec, type: "reimbursement" })}
-        >
-          修改款項內容
-        </button>
-        <button
-          className="action-button delete-button"
-          onClick={() => showDeleteDialog(rec.id, 'reimbursement')}
-        >
-          刪除款項
-        </button>
+      <Button
+        text={"修改款項內容"} btnType={"blue-type"}
+        onClickAction={() => setItemToModify({ ...rec, type: "reimbursement" })}
+      />
+      <Button
+        text={"刪除款項"} btnType={"red-type"}
+        onClickAction={() => setItemToDelete({ id: rec.id, type: "reimbursement" })}
+      />
       </>
     ) }
   ]
@@ -59,24 +58,17 @@ function UserPendingRequest() {
     { key: "createdAt", label: "申請時間", render: (rec) => new Date(rec.createdAt).toLocaleString() },
     { key: "", label: "", render: (rec) => (
       <>
-        <button
-          className="action-button modify-button"
-          onClick={() => {}}
-        >
-          修改款項內容
-        </button>
-        <button
-          className="action-button delete-button"
-          onClick={() => showDeleteDialog(rec.id, 'budget')}
-        >
-          刪除款項
-        </button>
+      <Button
+        text={"修改款項內容"} btnType={"blue-type"}
+        onClickAction={() => setItemToModify({ ...rec, type: "budget" })}
+      />
+      <Button
+        text={"刪除款項"} btnType={"red-type"}
+        onClickAction={() => setItemToDelete({ id: rec.id, type: "budget" })}
+      />
       </>
     ) }
   ]
-
-  const [itemToDelete, setItemToDelete] = useState(null);
-  const [itemToModify, setItemToModify] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -86,6 +78,7 @@ function UserPendingRequest() {
     try {
       await fetchBudgets({ setBudgets, token, param: "?status=pending" }, true);
       await fetchReimbursements({ setReimbursements, token, param: "?status=pending" }, true);
+      setStatus("");
     } catch (err) {
       setStatus("錯誤：" + err.message);
     }
@@ -125,10 +118,6 @@ function UserPendingRequest() {
       setStatus("修改失敗：" + err.message);
     }
   };
-
-  const showDeleteDialog = (id, type) => {
-    setItemToDelete({ id, type });
-  };
   
   return (
   <>
@@ -164,10 +153,9 @@ function UserPendingRequest() {
   <div className="status">{status}</div>
 
   {itemToDelete && (
-    <DeleteConfirm
-      id={itemToDelete.id}
-      type={itemToDelete.type}
-      onConfirm={handleFinalDelete}
+    <ConfirmDialog
+      message={`確定要刪除這筆款項嗎？`}
+      onConfirm={() => handleFinalDelete(itemToDelete.id, itemToDelete.type)}
       onClose={() => setItemToDelete(null)}
     />
   )}
