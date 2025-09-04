@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import "./styles/dashboardSelector.css";
 
-export default function DashboardSelector({ role, value, onChange }) {
-  const [open, setOpen] = useState(false);
-
+export default function DashboardSelector({ role, value, onChange, open, setOpen }) {
   const handleSelect = (val) => {
     onChange(val);
     setOpen(false);
@@ -21,24 +19,24 @@ export default function DashboardSelector({ role, value, onChange }) {
   }
 
   return (
-    <div className="dashboard-selector">
-      <button
-        className="selector-button"
-        onClick={() => setOpen((prev) => !prev)}
-      >
-        {options.find((opt) => opt.value === value)?.label || "選擇介面"}
-        <span className="arrow">{open ? "▲" : "▼"}</span>
-      </button>
+  <div className="dashboard-selector">
+    <button
+      className="selector-button"
+      onClick={() => setOpen((prev) => !prev)}
+    >
+      {options.find((opt) => opt.value === value)?.label || "選擇介面"}
+      <span className="arrow">{open ? "▲" : "▼"}</span>
+    </button>
 
-      {open && (
-        <ul className="selector-options">
-          {options.map((opt) => (
-            <li key={opt.value} onClick={() => handleSelect(opt.value)}>
-              {opt.label}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    {open && (
+    <ul className="selector-options">
+      {options.map((opt) => (
+        <li key={opt.value} onClick={() => handleSelect(opt.value)}>
+          {opt.label}
+        </li>
+      ))}
+    </ul>
+    )}
+  </div>
   );
 }
